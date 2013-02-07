@@ -155,6 +155,15 @@ class ThemeHook_html extends ThemeHook
 			$to = __PUBLIC__ . "/library/" . $style["name"];
 			copy($from,$to);
 		}
+		foreach($variables["libraryfolders_array"] as $folder)
+		{
+			$from = __THEMEROOT__ . "/library/" . $folder["name"];
+			$to = __PUBLIC__ . "/library/" . $folder["name"];
+			$command = "xcopy $from $to";
+			$command = str_replace("/","\\",$command);
+			$command .= " /e/i/y/q";
+			exec($command);
+		}
 	}
 	public function Preprocess(&$variables)
 	{/*
@@ -168,37 +177,37 @@ class ThemeHook_html extends ThemeHook
 		$variables["head_title"] = "Concierge Administration";
 		if(isset($variables["scripts_array"]) && !isset($variables["scripts"]))
 		{
-			$acc = "<!-- scripts start here -->\n";
+			$acc = "\r\n<!-- scripts start here -->\r\n";
 			foreach($variables["scripts_array"] as $entry)
 			{
 				if(isset($entry["name"]))
 				{
-					$acc .= "<script type='text/javascript' src='library/" . $entry["name"] . "'></script>\n";
+					$acc .= "<script type='text/javascript' src='library/" . $entry["name"] . "'></script>\r\n";
 				}
 				else if(isset($entry["code"]))
 				{
-					$acc .= "<script type='text/javascript'>\n" . $entry["code"] . "\n</script>\n";
+					$acc .= "<script type='text/javascript'>\n" . $entry["code"] . "\n</script>\r\n";
 				}
 			}
-			$acc .= "<!-- scripts stop here -->\n";
+			$acc .= "<!-- scripts stop here -->\r\n";
 			$variables["scripts"] = $acc;
 		}
 		else
 			$variables["scripts"] = "";
 		if(isset($variables["styles_array"]) && !isset($variables["styles"]))
 		{
-			$acc = "<!-- styles start here -->\n";
-			$acc .= "<style type='text/css'>\n";
+			$acc = "<!-- styles start here -->\r\n";
+			$acc .= "<style type='text/css'>\r\n";
 			foreach($variables["styles_array"] as $entry)
 			{
-				$acc .= "@import 'library/" . $entry["name"] . "';\n";
+				$acc .= "@import 'library/" . $entry["name"] . "';\r\n";
 			}
-			$acc .= "</style>\n";
-			$acc .= "<!-- styles stop here -->\n";
+			$acc .= "</style>\r\n";
+			$acc .= "<!-- styles stop here -->\r\n";
 			$variables["styles"] = $acc;
 		}
 		else
-			$variables["styles"] = "\n<!-- no styles today -->\n";
+			$variables["styles"] = "\r\n<!-- no styles today -->\r\n";
 		if(isset($variables["attributes_array"]) && !isset($variables["attributes"]))
 		{
 			$acc = "";
@@ -235,6 +244,7 @@ class ThemeHook_html extends ThemeHook
 		$this->info["variables"]["scripts_array"] = array();
 		$this->info["variables"]["styles_array"] = array();
 		$this->info["variables"]["attributes_array"] = array();
+		$this->info["variables"]["libraryfolders_array"] = array();
 		$this->info["variables"]["content"] = array();
 		$this->info["variables"]["page"] = array();
 	}

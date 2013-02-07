@@ -42,15 +42,15 @@ EODJQuerySnippetMethods
 EODJQuerySnippetSetterMethods
 			;
 		}
-		$allFuncs = implode(", // end of method and start of next method \n",$funcs + $setterFuncs);
+		$allFuncs = implode(", /* end of method and start of next method */\n",$funcs + $setterFuncs);
 		$fullText = <<<EODJQueryPluginSnippet
 /* Begin snippet for JQueryPlugin({$this->Name}) */
 (function($)  {
   var methods =
   {
-    // start of methods
+    /* start of methods */
 $allFuncs
-    // end of methods
+    /* end of methods */
   };
   $.fn.{$this->Name} = function(method)
   {

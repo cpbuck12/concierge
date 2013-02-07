@@ -9,13 +9,13 @@ function BuildMachines()
 	$machines["mainmenu"]->AddTransition("resume", "addingpatient", "waiting");
 	$machines["mainmenu"]->AddTransition("resume", "addingfiles", "waiting");
 	$machines["mainmenu"]->AddTransition("run", "starting", "waiting");
-//	$machines["mainmenu"]->AddLeaveCallback("starting", $code);
+	$machines["mainmenu"]->AddLeaveCallback("resume", "return true;");
 	
 	
-	$acc = "var StateMachines = new Array();\n";
+	$acc = "var StateMachinesFactories = new Array();\n";
 	foreach($machines as $name => $machine)
 	{
-		$acc .= "StateMachines['" . $name . "'] = " . $machine->Generate("starting");  
+		$acc .= "StateMachinesFactories['" . $name . "'] =  function() { \n return " . $machine->Generate("starting")  . "\n}";  
 	}
 	Utilities::SaveLibraryItem("machines.js",$acc);
 }

@@ -6,7 +6,7 @@ class StateMachine
 	protected $enters = array();
 	protected $befores = array();
 	protected $afters = array();
-	public $defaultHandlerCode = "      return false; // filled";
+	public $defaultHandlerCode = "      return false; /* filled */";
 	
 	public function AddTransition($event,$from,$to)
 	{
@@ -63,8 +63,8 @@ class StateMachine
 	protected function AllEventsMissingForFromState($stateFrom)
 	{
 		$allEvents = $this->AllEvents();
-		$missing = $this->AllEventsForFromState($stateFrom);
-		$result =  array_diff($allEvents,$missing);
+		$present = $this->AllEventsForFromState($stateFrom);
+		$result =  array_diff($allEvents,$present);
 		return $result;
 	}
 	protected function EventsMissingForFromState($stateFrom)
@@ -90,7 +90,8 @@ class StateMachine
 	}
 	protected function FormatTransition($event,$from,$to,$extra = "")
 	{
-		$result = "{ name: '" . $event . "', from: '" . $from . "', to: '" . $to . "' }" . $extra;
+		$result = sprintf("{ name: %20s, from: %20s, to: %20s }","'".$event."'","'".$from."'","'".$to."'") . $extra;
+//		$result = "{ name: '" . $event . "', from: '" . $from . "', to: '" . $to . "' }" . $extra;
 		return $result;
 	}
 	protected function FormatCallback($funcName,$code)
@@ -137,13 +138,10 @@ class StateMachine
 		}
 		foreach($this->AllStates() as $state)
 		{
-//			$missing = $this->AllEventsForFromState($stateFrom);
-				
-//			if($this->EventsMissingForFromState($state))
-	// TODO: fix the default handlers, they're not being generated
-			if(count($this->AllEventsForFromState($state)) == 0)
+			$missings = $this->AllEventsForFromState($state);
+			if(count($missings) > 0)
 			{
-				$callbackBuffers[] = $this->FormatCallback("onleave" . $state, $this->defaultHandlerCode);
+				$callbackBuffers[] = $this->FormatCallback("onleave" . $state,$this->defaultHandlerCode);
 			}
 		}
 		$callbackBuffer = implode(",\n    ",$callbackBuffers);

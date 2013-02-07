@@ -277,10 +277,14 @@ class ThemeEngine
 			),
 			"#styles_array" => array
 			(
-					array("name" => "jquery-ui.css", "weight" => 10),
-					array("name" => "jquery-ui-1.9.2.custom.css", "weight" => 20),
-					array("name" => "jquery.dataTables.css", "weight" => 30),
-					array("name" => "main.css", "weight" => 40)
+				array("name" => "jquery-ui.css", "weight" => 10),
+				array("name" => "jquery-ui-1.9.2.custom.css", "weight" => 20),
+				array("name" => "jquery.dataTables.css", "weight" => 30),
+				array("name" => "main.css", "weight" => 40)
+			),
+			"#libraryfolders_array" => array
+			(
+				array("name" => "images")
 			),
 			"#classes_array" => array
 			(

@@ -53,7 +53,7 @@ EODMessageSend
         	jqthis.data("messagepump",
             {
 				target : jqthis,
-				interval : 0, // milliseconds
+				interval : 0 /* milliseconds */
 			});
         }
 		jqthis.data("send",[]);
