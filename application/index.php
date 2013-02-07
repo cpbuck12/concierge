@@ -11,7 +11,6 @@ function BuildMachines()
 	$machines["mainmenu"]->AddTransition("run", "starting", "waiting");
 //	$machines["mainmenu"]->AddLeaveCallback("starting", $code);
 	
-//	public function AddLeaveCallback($stateName,$code)
 	
 	$acc = "var StateMachines = new Array();\n";
 	foreach($machines as $name => $machine)
