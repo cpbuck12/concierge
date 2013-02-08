@@ -1,0 +1,231 @@
+<html>
+<head>
+<title>Concierge Administration</title>
+<!-- styles start here -->
+<style type='text/css'>
+@import 'library/jquery-ui.css';
+@import 'library/jquery-ui-1.9.2.custom.css';
+@import 'library/jquery.dataTables.css';
+@import 'library/main.css';
+</style>
+<!-- styles stop here -->
+<!-- scripts start here -->
+<script type='text/javascript' src='library/jquery.js'></script>
+<script type='text/javascript' src='library/jquery-ui.js'></script>
+<script type='text/javascript' src='library/jquery.dataTables.js'></script>
+<script type='text/javascript' src='library/state-machine.js'></script>
+<script type='text/javascript' src='library/ColReorderWithResize.js'></script>
+<script type='text/javascript' src='library/code.js'></script>
+<script type='text/javascript'>
+/* Begin snippet for JQueryPlugin(messagepump) */
+(function($)  {
+  var methods =
+  {
+    // start of methods
+    post : function(options)
+    {
+      return this.each(
+
+	function()
+	{
+		if(!jQuery.isFunction(options))
+			return;
+        var jqthis = $(this);
+        var data = jqthis.data("post");
+        if(!data)
+			return;
+		jqthis.queue("post",options);
+	});
+    }, // end of method and start of next method 
+    send : function(options)
+    {
+      return this.each(
+
+	function()
+	{
+		if(!jQuery.isFunction(options))
+			return;
+        var jqthis = $(this);
+        var data = jqthis.data("send");
+        if(!data)
+			return;
+		jqthis.queue("send",options);
+	});
+    }, // end of method and start of next method 
+    init : function(options)
+    {
+      return this.each(
+				
+	function()
+    {
+        var jqthis = $(this)
+        var data = jqthis.data("messagepump");
+        if(!data)
+        {
+        	jqthis.data("messagepump",
+            {
+				target : jqthis,
+				interval : 0, // milliseconds
+			});
+        }
+		jqthis.data("send",[]);
+		jqthis.data("post",[]);
+    });
+    }, // end of method and start of next method 
+    setinterval : function(options)
+    {
+      return this.each(
+      function()
+      {
+        var opts = options || { delay : 0 };
+        var jqthis = $(this)
+				
+        var data = jqthis.data("messagepump");
+        if(typeof data.intervalID !== "undefined" && data.intervalID)
+        {
+          window.clearInterval(data.intervalID);
+        }
+        if(opts.delay === 0)
+        {
+          if(typeof data.intervalID !== undefined)
+          {
+            delete data.intervalID;
+          }
+          return;
+        }
+        data.intervalID = window.setInterval(function() {
+				if(jqthis.queue("send").length > 0)
+				{
+					jqthis.dequeue("send");
+					return;
+				}
+				if(jqthis.queue("post").length > 0)
+				{
+					jqthis.dequeue("post");
+					return;
+				}
+        }, opts.delay);
+      });
+    }
+    // end of methods
+  };
+  $.fn.messagepump = function(method)
+  {
+    if ( methods[method] )
+    {
+      return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+    }
+    else if ( typeof method === 'object' || ! method )
+    {
+      return methods.init.apply( this, arguments );
+    }
+    else
+    {
+      $.error( 'Method ' +  method + ' does not exist on jQueryPlugin' );
+    }
+  };
+})(jQuery);
+/* End snippet for JQueryPlugin(messagepump) */
+</script>
+<!-- scripts stop here -->
+</head>
+<body   > 
+<!-- page.template.php -->
+<!-- sheet.teplate.php -->
+<div class='class-initially-hidden class-sheet class-id-main' >
+<h1 class='class-title'>Main Menu</h1>
+<!-- layer.template.php -->
+<div class='class-initally-hidden class-layer class-id-mainlayer' >
+<!-- menu.template.php -->
+<ul class='class-menu class-id-mainmenu' >
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-databasemaintenance' >
+<a href='#'><div>Database Maintenance</div></a><!-- menu.template.php -->
+<ul class='class-menu class-id-databasemaintenancemenu' >
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-loadfromconciergemenuitem' >
+<a href='#'><div>Load file from Concierge Directories</div></a></li>
+
+
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-registernewpatient' >
+<a href='#'><div>Register a new Concierge Patient</div></a></li>
+
+
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-browsedocuments' >
+<a href='#'><div>Browse Documents</div></a></li>
+
+
+</ul>
+
+</li>
+
+
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-createreport' >
+<a href='#'><div>Create Report</div></a></li>
+
+
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-createwebsite' >
+<a href='#'><div>Create Website</div></a></li>
+
+
+</ul>
+
+</div>
+
+</div>
+
+
+<!-- sheet.teplate.php -->
+<div class='class-initially-hidden class-sheet class-id-loadfromconciergesheet' >
+<h1 class='class-title'>Concierge Loader</h1>
+<!-- layer.template.php -->
+<div class='class-initally-hidden class-layer class-id-mainlayer2' >
+<div class='hidden' id='hiddenmessagequeueelement'></div><table class='class-table class-id-patient' >
+</table>
+<table class='class-table class-id-filesystem' >
+</table>
+<button type='input' class='class-button class-id-mainmenu'>Main Menu</button>
+</div>
+
+</div>
+
+
+<!-- sheet.teplate.php -->
+<div class='class-initially-hidden class-sheet class-id-registerpatientsheet' >
+<h1 class='class-title'>Register New Patient</h1>
+<!-- layer.template.php -->
+<div class='class-initally-hidden class-layer class-id-mainlayer' >
+<table class='class-table class-id-patient2' >
+</table>
+<button type='input' class='class-button class-id-mainmenu2'>Main Menu</button>
+</div>
+
+</div>
+
+
+<!-- sheet.teplate.php -->
+<div class='class-initially-hidden class-sheet class-id-browsedocmentssheet' >
+<h1 class='class-title'>Browse Documents</h1>
+<!-- layer.template.php -->
+<div class='class-initally-hidden class-layer class-id-mainlayer' >
+<table class='class-table class-id-patient3' >
+</table>
+<button type='input' class='class-button class-id-mainmenu3'>Main Menu</button>
+</div>
+
+</div>
+
+
+<!-- sheet.teplate.php -->
+<div class='class-initially-hidden class-sheet class-id-createreport' >
+<h1 class='class-title'>Create Report</h1>
+</div>
+
+
+</body>
+</html>
+
