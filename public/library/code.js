@@ -5,8 +5,6 @@ jQuery(document).ready(function() {
 });
 */
 jQuery(document).ready(function () {
-	var sm = StateMachinesFactories["mainmenu"]();
-	$(".class-id-mainmenu").data("statemachine",sm);
 	var abc = jQuery("#hiddenmessagequeueelement");
 	abc.messagepump();
 	abc.messagepump("setinterval",{ delay : 1000 });

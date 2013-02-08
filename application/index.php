@@ -4,12 +4,14 @@ function BuildMachines()
 {
 	$machines = array();
 	$machines["mainmenu"] = new StateMachine();
-	$machines["mainmenu"]->AddTransition("addpatient", "waiting", "addingpatient");
-	$machines["mainmenu"]->AddTransition("addfiles", "waiting", "addingfiles");
+	$machines["mainmenu"]->AddTransition("run", "starting", "waiting");
+	$machines["mainmenu"]->AddTransition("user_addpatient", "waiting", "fading_addingpatient");
+	$machines["mainmenu"]->AddTransition("user_addfiles", "waiting", "fading_addingfiles");
+	$machines["mainmenu"]->AddTransition("continue","fading_addingpatient","addingpatient");
+	$machines["mainmenu"]->AddTransition("continue","fading_addingfiles","addingfiles");
+	$machines["mainmenu"]->AddTransition("show", "waiting", "fading_addingfiles");
 	$machines["mainmenu"]->AddTransition("resume", "addingpatient", "waiting");
 	$machines["mainmenu"]->AddTransition("resume", "addingfiles", "waiting");
-	$machines["mainmenu"]->AddTransition("run", "starting", "waiting");
-	$machines["mainmenu"]->AddLeaveCallback("resume", "return true;");
 	
 	
 	$acc = "var StateMachinesFactories = new Array();\n";
