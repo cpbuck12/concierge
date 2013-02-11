@@ -137,11 +137,12 @@ class StateMachine
 			$callbackBuffers[] = $this->FormatCallback("onafter" . $after[0],$after[1]);
 		}
 		$callbackBuffer = implode(",\n    ",$callbackBuffers);
+		$callbackBuffers = array();
 		$heading = false;
 		foreach($this->AllStates() as $state)
 		{
 			$missings = $this->AllEventsForFromState($state);
-			if(count($missings) > 0)
+			if(count($missings) == 0)
 			{
 				if(!$heading)
 				{

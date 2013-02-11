@@ -272,7 +272,7 @@ class ThemeEngine
 				array("name" => "state-machine.js", "weight" => 40),
 				array("name" => "ColReorderWithResize.js", "weight" => 50),
 				array("name" => "code.js", "weight" => 60),
-				//array("name" => "machines.js", "weight" => 70),
+				array("name" => "machines.js", "weight" => 70),
 				array("code" => $inlineCode, "weight" => 80)
 			),
 			"#styles_array" => array
