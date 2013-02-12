@@ -244,7 +244,11 @@ class ThemeHook_html extends ThemeHook
 		$this->info["variables"]["scripts_array"] = array();
 		$this->info["variables"]["styles_array"] = array();
 		$this->info["variables"]["attributes_array"] = array();
+<<<<<<< HEAD
 		$this->info["variables"]["libraryfolders_array"] = array();
+=======
+		$this->info["variables"]["libraries_array"] = array();
+>>>>>>> d24e741... library folder copying to public
 		$this->info["variables"]["content"] = array();
 		$this->info["variables"]["page"] = array();
 	}

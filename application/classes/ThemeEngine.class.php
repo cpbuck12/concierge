@@ -286,6 +286,10 @@ class ThemeEngine
 			(
 				array("name" => "images")
 			),
+			"#libraries_array" => array
+			(
+					array("name" => "images")
+			),
 			"#classes_array" => array
 			(
 				"body-class"
