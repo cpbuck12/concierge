@@ -282,6 +282,10 @@ class ThemeEngine
 					array("name" => "jquery.dataTables.css", "weight" => 30),
 					array("name" => "main.css", "weight" => 40)
 			),
+			"#libraries_array" => array
+			(
+					array("name" => "images")
+			),
 			"#classes_array" => array
 			(
 				"body-class"

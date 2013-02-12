@@ -235,6 +235,7 @@ class ThemeHook_html extends ThemeHook
 		$this->info["variables"]["scripts_array"] = array();
 		$this->info["variables"]["styles_array"] = array();
 		$this->info["variables"]["attributes_array"] = array();
+		$this->info["variables"]["libraries_array"] = array();
 		$this->info["variables"]["content"] = array();
 		$this->info["variables"]["page"] = array();
 	}
