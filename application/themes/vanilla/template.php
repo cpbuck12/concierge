@@ -38,6 +38,36 @@ class ThemeHook_table extends ThemeHook_widget
 	}
 }
 
+class ThemeHook_fieldset extends ThemeHook_widget
+{
+	public function __construct()
+	{
+		parent::__construct();
+		$this->info["type"] = $this->info["render element"] = "fieldset";
+	}
+	public function Preprocess(&$variables)
+	{
+		$variables['fieldset']['#classes_array'][] = 'class-fieldset';
+		$variables['fieldset']['#classes_array'][] = 'class-id-' . $variables['fieldset']['#name'];
+		$variables['fieldset']["#classes"] = "class='" . implode(" ",$variables['fieldset']["#classes_array"]) . "'";
+	}
+}
+
+class ThemeHook_textfield extends ThemeHook_widget
+{
+	public function __construct()
+	{
+		parent::__construct();
+		$this->info["type"] = $this->info["render element"] = "textfield";
+	}
+	public function Preprocess(&$variables)
+	{
+		$variables['textfield']['#classes_array'][] = 'class-textfield';
+		$variables['textfield']['#classes_array'][] = 'class-id-' . $variables['textfield']['#name'];
+		$variables['textfield']["#classes"] = "class='" . implode(" ",$variables['textfield']["#classes_array"]) . "'";
+	}
+}
+
 class ThemeHook_button extends ThemeHook_widget
 {
 	public function __construct()
@@ -155,7 +185,7 @@ class ThemeHook_html extends ThemeHook
 			$to = __PUBLIC__ . "/library/" . $style["name"];
 			copy($from,$to);
 		}
-		foreach($variables["libraryfolders_array"] as $folder)
+		foreach($variables["libraries_array"] as $folder)
 		{
 			$from = __THEMEROOT__ . "/library/" . $folder["name"];
 			$to = __PUBLIC__ . "/library/" . $folder["name"];
@@ -244,11 +274,7 @@ class ThemeHook_html extends ThemeHook
 		$this->info["variables"]["scripts_array"] = array();
 		$this->info["variables"]["styles_array"] = array();
 		$this->info["variables"]["attributes_array"] = array();
-<<<<<<< HEAD
-		$this->info["variables"]["libraryfolders_array"] = array();
-=======
 		$this->info["variables"]["libraries_array"] = array();
->>>>>>> d24e741... library folder copying to public
 		$this->info["variables"]["content"] = array();
 		$this->info["variables"]["page"] = array();
 	}

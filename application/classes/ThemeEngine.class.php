@@ -112,6 +112,36 @@ class ThemeEngine
 								'#title' => 'Browse Documents',
 								'#theme' => 'menuitem',
 								'#type' => 'menuitem'
+							),
+							array
+							(
+								'#name' => 'managedoctors',
+								'#title' => 'Manage Doctors',
+								'#theme' => 'menuitem',
+								'#type' => 'menuitem',
+								'#submenu' => array
+								(
+									'#name' => 'managedoctorsmenu',
+									'#theme' => 'menu',
+									'#type' => 'menu',
+									'#content' => array
+									(
+										array
+										(
+											'#name' => 'addnewdoctor',
+											'#title' => 'Add New Doctor',
+											'#theme' => 'menuitem',
+											'#type' => 'menuitem'
+										),
+										array
+										(
+											'#name' => 'listdoctors',
+											'#title' => 'List Doctors',
+											'#theme' => 'menuitem',
+											'#type' => 'menuitem'
+										),
+									)
+								)
 							)
 						)
 					),
@@ -182,10 +212,20 @@ class ThemeEngine
 			),
 			"last" => array
 			(
-				"#name" => "mainmenu",
-				"#theme" => "button",
-				"#type" => "button",
-				"#content" => "Main Menu"
+				array
+				(
+					"#name" => "mainmenu",
+					"#theme" => "button",
+					"#type" => "button",
+					"#content" => "Main Menu"
+				),
+				array
+				(
+					"#name" => "loadfiles",
+					"#theme" => "button",
+					"#type" => "button",
+					"#content" => "Load files"
+				)
 			)
 		);
 		$registerPatientSheetmainLayerContent = array
@@ -254,11 +294,159 @@ class ThemeEngine
 		$browseDocumentsSheet = array("#name" => "browsedocmentssheet", "#title" => "Browse Documents", "#theme" => "sheet", "#type" => "sheet", "#layers" => $browseDocumentsSheetLayers);
 		
 		$createreportSheet = array ("#name" => "createreport", "#title" => "Create Report", "#theme" => "sheet" , "#type" => "sheet");
+		
+		$addDoctorSheetmainLayerContent = array 
+		(
+			"first" => array
+			(
+				'#name' => 'doctoraddfields',
+				'#theme' => 'fieldset',
+				'#type' => 'fieldset',
+				'#legend' => 'Doctor Information',
+				'#content' => array
+				(
+					array
+					(
+						'#name' => 'firstname',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'First Name'
+					),
+					array
+					(
+						'#name' => 'lastname',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Last Name'
+					),
+					array
+					(
+						'#name' => 'shortname',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Short Name'
+					),
+					array
+					(
+						'#name' => 'address1',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Address Line 1'
+					),
+					array
+					(
+						'#name' => 'address2',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Address Line 2'
+					),
+					array
+					(
+						'#name' => 'address3',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Address Line 3'
+					),
+					array
+					(
+						'#name' => 'city',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'City'
+					),
+					array
+					(
+						'#name' => 'locality1',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Locality Line 1'
+					),
+					array
+					(
+						'#name' => 'locality2',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Locality Line 2'
+					),
+					array
+					(
+						'#name' => 'postalcode',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Postal Code'
+					),
+					array
+					(
+						'#name' => 'country',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Country'
+					),
+					array
+					(
+						'#name' => 'voice',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Voice'
+					),
+					array
+					(
+						'#name' => 'fax',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Fax'
+					),
+					array
+					(
+						'#name' => 'email',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'E-mail'
+					),
+					array
+					(
+						'#name' => 'contact',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Contact Person'
+					)
+				)
+			),
+			"second" => array
+			(
+				array
+				(
+					'#name' => 'mainmenu',
+					'#theme' => 'button',
+					'#type' => 'button',
+					'#content' => 'Main Menu'					
+				),
+				array
+				(
+					'#name' => 'adddoctor',
+					'#theme' => 'button',
+					'#type' => 'button',
+					'#content' => 'Add Doctor'
+				)
+			)
+		);
+		$addDoctorSheetmainLayer = array
+		(
+			'#name' => "adddoctormainlayer",
+			"#theme" => "layer",
+			"#type" => "layer",
+			"#content" => array($addDoctorSheetmainLayerContent)				
+		);
+		$addDoctorSheetLayers = array();
+		$addDoctorSheetLayers[] = $addDoctorSheetmainLayer;
+		$addDoctorSheet = array ("#name" => "adddoctorsheet", "#title" => "Add New Doctor", "#theme" => "sheet", "#type" => "sheet", '#layers' => $addDoctorSheetLayers);
+		
 		$sheets[] = $mainSheet;
 		$sheets[] = $loadfromconciergeSheet;
 		$sheets[] = $registerPatientSheet;
 		$sheets[] = $browseDocumentsSheet;
 		$sheets[] = $createreportSheet;
+		$sheets[] = $addDoctorSheet;
 		$messagePumpPlugin = new MessagePump();
 		$inlineCode = $messagePumpPlugin->Snippet(); 
 		$result = array
@@ -271,6 +459,8 @@ class ThemeEngine
 				array("name" => "jquery.dataTables.js", "weight" => 30),
 				array("name" => "state-machine.js", "weight" => 40),
 				array("name" => "ColReorderWithResize.js", "weight" => 50),
+				array("name" => "TableTools.js", "weight" => 53),
+				array("name" => "ZeroClipboard.js", "weight" => 56),
 				array("name" => "code.js", "weight" => 60),
 				array("name" => "machines.js", "weight" => 70),
 				array("code" => $inlineCode, "weight" => 80)
