@@ -3,8 +3,10 @@
 <?php
 	if(isset($textfield['#title']))
 	{
-?><span><?php
+?><tr><td><?php
 		print $textfield['#title'];
-?></span><?php
-    }
-?><input type='text' <?php print $textfield['#classes']; ?>></input>
+?></td><td><input type='text' <?php
+		print $textfield['#classes'];
+?>></input></td></tr><?php 
+	}
+?>
