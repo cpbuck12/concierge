@@ -1,5 +1,6 @@
 <!-- fieldset.template.php -->
-
+<table>
+<tr><td>
 <table <?php print $fieldset['#classes'] ?>>
 <caption><?php print $fieldset['#legend']; ?></caption>
 <thead>
@@ -13,4 +14,6 @@
 	}
 ?>
 </tbody>	
+</table>
+</td></tr>
 </table>

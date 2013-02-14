@@ -150,14 +150,11 @@ function SetStateMachine(selector,machine)
 function DepopulateFiles()
 {
 	var elem = $("table.class-id-filesystem");
-	var pre_elem = $(".savingbuffer0");
-	var theDivText = Base64.decode(pre_elem.text());
-	var oTable = elem.dataTable({ bRetrieve: true });
-	oTable.fnDestroy(true);
-	pre_elem.after(theDivText);
-	pre_elem.remove();
-	elem = $("table.class-id-filesystem");
 	elem.hide();
+	UnstashElement(elem,function() {
+		var oTable = elem.dataTable({ bRetrieve: true });
+		oTable.fnDestroy(true);
+	});
 }
 
 function OnFileSelectionChanged()
@@ -168,17 +165,31 @@ function OnFileSelectionChanged()
 		sm.filechange();
 	});
 }
+
 function OutterHtml(elem)
 {
 	return $(elem).clone().wrap("<p>").parent().html();
 }
 
+function StashElement(elem)
+{
+	var origHtml = OutterHtml(elem);
+	origHtml = Base64.encode(origHtml);
+	elem.before("<div class='class-stash'>"+origHtml+"</div>");
+}
+
+function UnstashElement(elem,remover)
+{
+	var prev_elem = $(elem).prev();
+	var divText = Base64.decode(prev_elem.text());
+	remover();
+	prev_elem.after(divText);
+	prev_elem.remove();
+}
+
 function PopulateFiles(after)
 {
-	var origHtml = OutterHtml($("table.class-id-filesystem"));
-	
-	origHtml = Base64.encode(origHtml);
-	$("table.class-id-filesystem").before("<div class='class-hidden savingbuffer0'>"+origHtml+"</div>");
+	StashElement($("table.class-id-filesystem"));
 	var row = $("table.class-id-patient tr.DTTT_selected td");
 	var firstName = $(row[0]).text();
 	var lastName = $(row[1]).text();

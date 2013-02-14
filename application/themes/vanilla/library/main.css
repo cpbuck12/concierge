@@ -30,6 +30,13 @@ ul.class-id-mainmenu {
 	width : 50%;
 }
 
+table.class-fieldset input {
+	width : 100%;
+}
+
+.class-stash {
+	display: none;
+}
 /*
 .dataTables_filter select, .dataTables_filter input
 {

@@ -79,8 +79,13 @@ EOD
 	$machineFactories["adddoctor"]->AddEnterCallback("starting", <<<EOD
 		$(".class-id-adddoctorsheet button.class-id-mainmenu").button().off("click",CancelAddDoctor);
 		$(".class-id-adddoctorsheet button.class-id-adddoctor").button().off("click",DoAddDoctor);
+		var tbl = $("table.class-id-doctoraddfields");
 		$(".class-id-adddoctorsheet").fadeOut('fast',function()
 		{
+			UnstashElement(tbl,function() {
+				var oTable = tbl.dataTable({ bRetrieve: true });
+				oTable.fnDestroy();
+			});
 			var smMain = GetStateMachine(".class-id-main");
 			var q = GetMessageQueue();
 			q.messagepump('send',function()
@@ -95,7 +100,11 @@ EOD
 
 		$(".class-id-adddoctorsheet button.class-id-mainmenu").button().on("click",CancelAddDoctor);
 		$(".class-id-adddoctorsheet button.class-id-adddoctor").button().on("click",DoAddDoctor);
-			$(".class-id-adddoctorsheet").fadeIn('fast',function() {
+		var tbl = $("table.class-id-doctoraddfields");
+		StashElement(tbl);
+		tbl.dataTable({ "sDom":"t","bJQueryUI": true,"bPageinate":false});
+			
+		$(".class-id-adddoctorsheet").fadeIn('fast',function() {
 			var sm = $(this).data("statemachine");
 			sm.transition();
 		});
@@ -156,7 +165,6 @@ EOD
 		var sm = GetStateMachine(".class-id-loadfromconciergesheet");
 		q.messagepump("send",function()
 		{
-			//alert("sending docontinue");
 			sm.docontinue();
 		});
 		return true;
@@ -201,7 +209,6 @@ EOD
 
 	$machineFactories["addfiles"]->AddLeaveCallback("starting", <<<EOD
 
-		alert("leaving addfiles starging");
 		$(".class-id-loadfromconciergesheet button.class-id-mainmenu").button().on("click",CancelFileLoading);
 		$(".class-id-loadfromconciergesheet button.class-id-loadfiles").button().on("click",DoFileLoading);
 			$(".class-id-loadfromconciergesheet").fadeIn('fast',function() {
