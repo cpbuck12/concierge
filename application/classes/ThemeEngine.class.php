@@ -228,17 +228,81 @@ class ThemeEngine
 				)
 			)
 		);
-		$registerPatientSheetmainLayerContent = array
+		$addPatientSheetmainLayerContent = array
 		(
 			"first" => array
 			(
-				"#name" => "patient2",
+				"#name" => "patientsondisk",
 				"#theme" => "table",
 				"#type" => "table"
 			),
+			"second" => array
+			(
+				"#name" => "patientsindb",
+				"#theme" => "table",
+				"#type" => "table"
+			),
+			"third" => array
+			(
+				'#name' => 'fields',
+				'#theme' => 'fieldset',
+				'#type' => 'fieldset',
+				'#legend' => 'New Patient',
+				'#content' => array
+				(
+					array
+					(
+						'#name' => 'firstname',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'First Name'
+					),
+					array
+					(
+						'#name' => 'lastname',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Last Name'
+					),
+					array
+					(
+						'#name' => 'dob',
+						'#theme' => 'date',
+						'#type' => 'date',
+						'#title' => 'Date of Birth'
+					),
+					array
+					(
+						'#name' => 'gender',
+						'#theme' => 'select',
+						'#type' => 'select',
+						'#title' => "Gender",
+						"#content" => array
+						(
+							array
+							(
+								'#title' => 'Female',
+								'#value' => 'F'
+							),
+							array
+							(
+								'#title' => 'Male',
+								'#value' => 'M'
+							)
+						)
+					)	
+				)
+			),
+			"fourth" => array
+			(
+				'#name' => 'addpatient',
+				"#theme" => "button",
+				"#type" => "button",
+				"#content" => "Add Patient"
+			),
 			"last" => array
 			(
-				"#name" => "mainmenu2",
+				"#name" => "mainmenu",
 				"#theme" => "button",
 				"#type" => "button",
 				"#content" => "Main Menu"
@@ -271,16 +335,16 @@ class ThemeEngine
 		$loadfromconciergeSheetLayers[] = $loadfromconciergeSheetmainLayer;
 		$loadfromconciergeSheet = array ("#name" => "loadfromconciergesheet", "#title" => "Concierge Loader", "#theme" => "sheet" , "#type" => "sheet", "#layers" => $loadfromconciergeSheetLayers);
 		
-		$registerPatientSheetmainLayer = array
+		$addPatientSheetmainLayer = array
 		(
 			"#name" => "mainlayer",
 			"#theme" => "layer",
 			"#type" => "layer",
-			"#content" => array($registerPatientSheetmainLayerContent)
+			"#content" => array($addPatientSheetmainLayerContent)
 	    ); 
-		$registerPatientSheetLayers = array();
-		$registerPatientSheetLayers[] = $registerPatientSheetmainLayer;
-		$registerPatientSheet = array("#name" => "registerpatientsheet", '#title' => "Register New Patient", "#theme" => "sheet", "#type" => "sheet", "#layers" => $registerPatientSheetLayers);
+		$addPatientSheetLayers = array();
+		$addPatientSheetLayers[] = $addPatientSheetmainLayer;
+		$addPatientSheet = array("#name" => "addpatientsheet", '#title' => "Add New Patient", "#theme" => "sheet", "#type" => "sheet", "#layers" => $addPatientSheetLayers);
 
 		$browseDocumentsSheetmainLayer = array
 		(
@@ -443,7 +507,7 @@ class ThemeEngine
 		
 		$sheets[] = $mainSheet;
 		$sheets[] = $loadfromconciergeSheet;
-		$sheets[] = $registerPatientSheet;
+		$sheets[] = $addPatientSheet;
 		$sheets[] = $browseDocumentsSheet;
 		$sheets[] = $createreportSheet;
 		$sheets[] = $addDoctorSheet;
