@@ -1,4 +1,7 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
+
 <head>
 <title>Concierge Administration</title>
 <!-- styles start here -->
@@ -9,19 +12,23 @@
 @import 'library/main.css';
 </style>
 <!-- styles stop here -->
+
 <!-- scripts start here -->
 <script type='text/javascript' src='library/jquery.js'></script>
 <script type='text/javascript' src='library/jquery-ui.js'></script>
 <script type='text/javascript' src='library/jquery.dataTables.js'></script>
 <script type='text/javascript' src='library/state-machine.js'></script>
 <script type='text/javascript' src='library/ColReorderWithResize.js'></script>
+<script type='text/javascript' src='library/TableTools.js'></script>
+<script type='text/javascript' src='library/ZeroClipboard.js'></script>
 <script type='text/javascript' src='library/code.js'></script>
+<script type='text/javascript' src='library/machines.js'></script>
 <script type='text/javascript'>
 /* Begin snippet for JQueryPlugin(messagepump) */
 (function($)  {
   var methods =
   {
-    // start of methods
+    /* start of methods */
     post : function(options)
     {
       return this.each(
@@ -36,7 +43,7 @@
 			return;
 		jqthis.queue("post",options);
 	});
-    }, // end of method and start of next method 
+    }, /* end of method and start of next method */
     send : function(options)
     {
       return this.each(
@@ -51,7 +58,7 @@
 			return;
 		jqthis.queue("send",options);
 	});
-    }, // end of method and start of next method 
+    }, /* end of method and start of next method */
     init : function(options)
     {
       return this.each(
@@ -65,13 +72,13 @@
         	jqthis.data("messagepump",
             {
 				target : jqthis,
-				interval : 0, // milliseconds
+				interval : 0 /* milliseconds */
 			});
         }
 		jqthis.data("send",[]);
 		jqthis.data("post",[]);
     });
-    }, // end of method and start of next method 
+    }, /* end of method and start of next method */
     setinterval : function(options)
     {
       return this.each(
@@ -107,7 +114,7 @@
         }, opts.delay);
       });
     }
-    // end of methods
+    /* end of methods */
   };
   $.fn.messagepump = function(method)
   {
@@ -157,6 +164,25 @@
 <a href='#'><div>Browse Documents</div></a></li>
 
 
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-managedoctors' >
+<a href='#'><div>Manage Doctors</div></a><!-- menu.template.php -->
+<ul class='class-menu class-id-managedoctorsmenu' >
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-addnewdoctor' >
+<a href='#'><div>Add New Doctor</div></a></li>
+
+
+<!-- menuitem.template.php -->
+<li class='class-menu-item class-id-listdoctors' >
+<a href='#'><div>List Doctors</div></a></li>
+
+
+</ul>
+
+</li>
+
+
 </ul>
 
 </li>
@@ -189,19 +215,132 @@
 <table class='class-table class-id-filesystem' >
 </table>
 <button type='input' class='class-button class-id-mainmenu'>Main Menu</button>
+<button type='input' class='class-button class-id-loadfiles'>Load files</button>
 </div>
 
 </div>
 
 
 <!-- sheet.teplate.php -->
-<div class='class-initially-hidden class-sheet class-id-registerpatientsheet' >
-<h1 class='class-title'>Register New Patient</h1>
+<div class='class-initially-hidden class-sheet class-id-addpatientsheet' >
+<h1 class='class-title'>Add New Patient</h1>
 <!-- layer.template.php -->
 <div class='class-initally-hidden class-layer class-id-mainlayer' >
-<table class='class-table class-id-patient2' >
+<table class='class-table class-id-patientsondisk' >
 </table>
-<button type='input' class='class-button class-id-mainmenu2'>Main Menu</button>
+<table class='class-table class-id-patientsindb' >
+</table>
+
+<!-- fieldset.template.php -->
+<fieldset class='class-fieldset class-id-fields' >
+	<legend>New Patient</legend>
+
+<!-- textfield.template.php -->
+<span>First Name</span><input type='text' class='class-textfield class-id-firstname'></input>
+
+
+<!-- textfield.template.php -->
+<span>Last Name</span><input type='text' class='class-textfield class-id-lastname'></input>
+
+
+<!-- date.template.php -->
+
+<span>Date of Birth</span><input type='text' class='class-date class-id-dob'></input>
+
+
+Notice: Undefined index: #name in C:\Users\pacmny_local\git\concierge\application\themes\vanilla\template.php on line 66
+
+Call Stack:
+    0.0005     168040   1. {main}() C:\Users\pacmny_local\git\concierge\application\index.php:0
+    0.0090     359760   2. GeneratePage() C:\Users\pacmny_local\git\concierge\application\index.php:361
+    0.0091     409368   3. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\index.php:350
+    0.0092     410248   4. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0092     412632   5. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0764     418016   6. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0764     418168   7. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0767     448248   8. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\html.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0767     448288   9. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\html.template.php:10
+    0.0767     448928  10. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0767     449752  11. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0768     450384  12. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0768     450520  13. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0769     469360  14. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\page.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0811     474656  15. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\page.template.php:5
+    0.0811     475328  16. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0811     476000  17. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0812     477704  18. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0812     477840  19. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0813     497504  20. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\sheet.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0813     498096  21. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\sheet.template.php:9
+    0.0813     498712  22. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0813     499384  23. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0814     501016  24. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0814     501152  25. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0815     521000  26. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\layer.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0815     521648  27. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\layer.template.php:10
+    0.0819     523952  28. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:603
+    0.0819     524624  29. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0819     525408  30. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0820     527040  31. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0820     527176  32. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0821     547056  33. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\fieldset.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0828     549080  34. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\fieldset.template.php:8
+    0.0828     549752  35. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0828     550528  36. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0828     550776  37. ThemeHook_select->Preprocess() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:34
+
+
+<!-- date.template.php -->
+
+<span>Gender</span><input type='text' 
+Notice: Undefined index: #classes in C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\date.template.php on line 11
+
+Call Stack:
+    0.0005     168040   1. {main}() C:\Users\pacmny_local\git\concierge\application\index.php:0
+    0.0090     359760   2. GeneratePage() C:\Users\pacmny_local\git\concierge\application\index.php:361
+    0.0091     409368   3. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\index.php:350
+    0.0092     410248   4. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0092     412632   5. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0764     418016   6. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0764     418168   7. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0767     448248   8. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\html.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0767     448288   9. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\html.template.php:10
+    0.0767     448928  10. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0767     449752  11. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0768     450384  12. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0768     450520  13. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0769     469360  14. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\page.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0811     474656  15. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\page.template.php:5
+    0.0811     475328  16. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0811     476000  17. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0812     477704  18. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0812     477840  19. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0813     497504  20. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\sheet.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0813     498096  21. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\sheet.template.php:9
+    0.0813     498712  22. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0813     499384  23. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0814     501016  24. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0814     501152  25. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0815     521000  26. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\layer.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0815     521648  27. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\layer.template.php:10
+    0.0819     523952  28. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:603
+    0.0819     524624  29. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0819     525408  30. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    0.0820     527040  31. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    0.0820     527176  32. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    0.0821     547056  33. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\fieldset.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+    0.0828     549080  34. ThemeEngine::Render() C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\fieldset.template.php:8
+    0.0828     549752  35. ThemeEngine->Theme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:597
+    0.0828     550528  36. ThemeHook->Generate() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:653
+    6.4251     551872  37. Utilities::RenderTheme() C:\Users\pacmny_local\git\concierge\application\classes\ThemeEngine.class.php:38
+    6.4251     552008  38. Utilities::Render() C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:72
+    6.4252     571040  39. include('C:\Users\pacmny_local\git\concierge\application\themes\vanilla\templates\date.template.php') C:\Users\pacmny_local\git\concierge\application\classes\Utilities.class.php:78
+
+></input>
+
+</fieldset>
+<button type='input' class='class-button class-id-addpatient'>Add Patient</button>
+<button type='input' class='class-button class-id-mainmenu'>Main Menu</button>
 </div>
 
 </div>
@@ -223,6 +362,83 @@
 <!-- sheet.teplate.php -->
 <div class='class-initially-hidden class-sheet class-id-createreport' >
 <h1 class='class-title'>Create Report</h1>
+</div>
+
+
+<!-- sheet.teplate.php -->
+<div class='class-initially-hidden class-sheet class-id-adddoctorsheet' >
+<h1 class='class-title'>Add New Doctor</h1>
+<!-- layer.template.php -->
+<div class='class-initally-hidden class-layer class-id-adddoctormainlayer' >
+
+<!-- fieldset.template.php -->
+<fieldset class='class-fieldset class-id-doctoraddfields' >
+	<legend>Doctor Information</legend>
+
+<!-- textfield.template.php -->
+<span>First Name</span><input type='text' class='class-textfield class-id-firstname'></input>
+
+
+<!-- textfield.template.php -->
+<span>Last Name</span><input type='text' class='class-textfield class-id-lastname'></input>
+
+
+<!-- textfield.template.php -->
+<span>Short Name</span><input type='text' class='class-textfield class-id-shortname'></input>
+
+
+<!-- textfield.template.php -->
+<span>Address Line 1</span><input type='text' class='class-textfield class-id-address1'></input>
+
+
+<!-- textfield.template.php -->
+<span>Address Line 2</span><input type='text' class='class-textfield class-id-address2'></input>
+
+
+<!-- textfield.template.php -->
+<span>Address Line 3</span><input type='text' class='class-textfield class-id-address3'></input>
+
+
+<!-- textfield.template.php -->
+<span>City</span><input type='text' class='class-textfield class-id-city'></input>
+
+
+<!-- textfield.template.php -->
+<span>Locality Line 1</span><input type='text' class='class-textfield class-id-locality1'></input>
+
+
+<!-- textfield.template.php -->
+<span>Locality Line 2</span><input type='text' class='class-textfield class-id-locality2'></input>
+
+
+<!-- textfield.template.php -->
+<span>Postal Code</span><input type='text' class='class-textfield class-id-postalcode'></input>
+
+
+<!-- textfield.template.php -->
+<span>Country</span><input type='text' class='class-textfield class-id-country'></input>
+
+
+<!-- textfield.template.php -->
+<span>Voice</span><input type='text' class='class-textfield class-id-voice'></input>
+
+
+<!-- textfield.template.php -->
+<span>Fax</span><input type='text' class='class-textfield class-id-fax'></input>
+
+
+<!-- textfield.template.php -->
+<span>E-mail</span><input type='text' class='class-textfield class-id-email'></input>
+
+
+<!-- textfield.template.php -->
+<span>Contact Person</span><input type='text' class='class-textfield class-id-contact'></input>
+
+</fieldset>
+<button type='input' class='class-button class-id-mainmenu'>Main Menu</button>
+<button type='input' class='class-button class-id-adddoctor'>Add Doctor</button>
+</div>
+
 </div>
 
 

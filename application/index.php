@@ -57,6 +57,17 @@ EOD
 		return true;
 EOD
 	);
+
+	$machineFactories["mainmenu"]->AddEnterCallback("addingpatient", <<<EOD
+	
+		var q = GetMessageQueue();
+		var smOther = GetStateMachine(".class-id-addpatientsheet");
+		q.messagepump("send",function() {
+			smOther.run();
+		});
+		return true;
+EOD
+	);
 	
 	$machineFactories["adddoctor"] = new StateMachine();
 	$machineFactories["adddoctor"]->AddTransition("run","starting","waiting");
@@ -220,6 +231,7 @@ EOD
 EOD
 	);
 	$machineFactories["addfiles"]->AddEnterCallback("loadingpatients", <<<EOD
+
 			$.getJSON("http://localhost:50505/ajax/GetPeopleOnDisk", function (patientsOnDiskJSON) {
 			var oTable = $("table.class-id-patient").dataTable({
 				"bJQueryUI": true,
@@ -244,6 +256,74 @@ EOD
 EOD
 	);
 
+	
+	$machineFactories["addpatient"] = new StateMachine();
+	$machineFactories["addpatient"]->AddTransition("run","starting","waiting");
+	$machineFactories["addpatient"]->AddTransition("error","waiting","displayingerror");
+	$machineFactories["addpatient"]->AddTransition("continue","displayingerror","waiting");
+	$machineFactories["addpatient"]->AddTransition("cancel","waiting","starting");
+	$machineFactories["addpatient"]->AddTransition("success","waiting","displayingsuccess");
+	$machineFactories["addpatient"]->AddTransition("continue","displayingsuccess","starting");
+
+	$machineFactories["addpatient"]->AddEnterCallback("starting", <<<EOD
+
+		$(".class-id-addpatientsheet button.class-id-mainmenu").button().off("click",CancelAddPatient);
+
+		$(".class-id-addpatientsheet").fadeOut('fast',function() {
+			var q = GetMessageQueue();
+			var smMain = GetStateMachine(".class-id-main");
+			q.messagepump("send",function()
+			{
+				smMain.run();
+			});
+		});
+
+EOD
+	);
+	$machineFactories["addpatient"]->AddLeaveCallback("starting", <<<EOD
+		$.getJSON("http://localhost:50505/ajax/GetPeopleOnDisk", function (patientsOnDiskJSON) {
+			$(".class-id-addpatientsheet table.class-id-patientsondisk").dataTable({
+				bJQueryUI : true,
+				"sDom": 'T<"clear">lfrtip',
+				"oTableTools": {
+					"sRowSelect": "single"
+	        	},
+				"aoColumnDefs":
+				[
+					{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
+					{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
+				],
+				"aaData" : patientsOnDiskJSON
+			}); 
+		});
+		$.getJSON("http://localhost:50505/ajax/GetPeopleInDb", function (patientsInDbJSON) {
+			$(".class-id-addpatientsheet table.class-id-patientsindb").dataTable({
+				bJQueryUI : true,
+				"sDom": 'T<"clear">lfrtip',
+				"oTableTools": {
+					"sRowSelect": "single"
+	        	},
+				"aoColumnDefs":
+				[
+					{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
+					{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
+				],
+				"aaData" : patientsInDbJSON
+			}); 
+		});
+		$(".class-id-addpatientsheet button.class-id-mainmenu").button().on("click",CancelAddPatient);
+		$(".class-id-addpatientsheet button.class-id-addpatient").button().on("click",DoAddPatient);
+		$(".class-id-addpatientsheet input.class-id-dob").datepicker();
+		$(".class-id-addpatientsheet").fadeIn('fast',function() {
+			var sm = $(this).data("statemachine");
+			sm.transition();
+		});
+		return StateMachine.ASYNC;
+	
+EOD
+	);
+
+	
 	$acc = "/* Generated from __FILE__ */\n";
 	$acc .= "var StateMachineFactories = new Array();\n";
 	foreach($machineFactories as $name => $machineFactory)
