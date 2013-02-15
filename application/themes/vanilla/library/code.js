@@ -182,6 +182,7 @@ function PopulateFiles(after)
 	var row = $("table.class-id-patient tr.DTTT_selected td");
 	var firstName = $(row[0]).text();
 	var lastName = $(row[1]).text();
+	alert("http://localhost:50505/ajax/GetFilesOnDisk");
 	$.getJSON("http://localhost:50505/ajax/GetFilesOnDisk?FirstName="+firstName+"&LastName="+lastName, function (filesOnDiskJSON) {
 		var elem = $("table.class-id-filesystem");
 		elem.show();
@@ -194,7 +195,7 @@ function PopulateFiles(after)
 					{ "sTitle": "Specialty", "aTargets": [ 3 ], "mData": "Specialty" },
 					{ "sTitle": "Subspecialty", "aTargets": [ 4 ], "mData": "Subspecialty" },
 					{ "sTitle": "Filename", "aTargets": [ 5 ], "mData": "FileName" },
-					{ "sTitle": "Path", "aTargets": [ 6 ], "mData": "FullName" }
+					{ "sTitle": "Path",bVisible:false, "aTargets": [ 6 ], "mData": "FullName" }
 				],
 			aaData : filesOnDiskJSON,
 			bJQueryUI: true,
@@ -257,6 +258,7 @@ function DoAddDoctor()
 			}
 		}
 	});
+	alert("http://localhost:50505/ajax/AddDoctor");
 	$.ajax({
 		type:"POST",
 		url:"http://localhost:50505/ajax/AddDoctor",
@@ -274,6 +276,40 @@ function DoAddDoctor()
 		{
 			alert("ajax failure, danger will robinson!")
 		}
+	});
+}
+
+function DoAddPatient()
+{
+	var firstName = $(".class-id-addpatientsheet input.class-id-firstname").val();
+	var lastName = $(".class-id-addpatientsheet input.class-id-lastname").val();
+	acc = firstName + "\n" + lastName + "\n";
+	$.ajax({
+		type:"POST",
+		url:"http://localhost:50505/ajax/AddPatient",
+		data:acc,
+		dataType:"text",
+		success: function(data)
+		{
+			var q = GetMessageQueue();
+			var sm = GetStateMachine(".class-id-adddoctorsheet");
+			q.messagepump("send",function() {
+				sm.success();
+			});
+		},
+		error: function()
+		{
+			alert("ajax failure, danger will robinson!")
+		}
+	});
+}
+
+function CancelAddPatient()
+{
+	var q = GetMessageQueue();
+	var sm = GetStateMachine(".class-id-addpatientsheet");
+	q.messagepump("send",function() {
+		sm.cancel();
 	});
 }
 
@@ -298,6 +334,7 @@ function DoFileLoading()
 		var o = aData[i];
 		acc = acc + o.Specialty + "\n" + o.Subspecialty + "\n" + o.FullName + "\n";
 	}
+	alert("http://localhost:50505/ajax/UploadFile");
 	$.post("http://localhost:50505/ajax/UploadFile",acc,function(data)
 	{
 		debugger;
@@ -318,6 +355,7 @@ jQuery(document).ready(function () {
 	SetStateMachine(".class-id-main",StateMachineFactories["mainmenu"]());
 	SetStateMachine(".class-id-loadfromconciergesheet",StateMachineFactories["addfiles"]());
 	SetStateMachine(".class-id-adddoctorsheet",StateMachineFactories["adddoctor"]());
+	SetStateMachine(".class-id-addpatientsheet",StateMachineFactories["addpatient"]());
 	/* end: state machines setup */
 
 	$(".class-initially-hidden").hide().removeClass("class-initially-hidden");
