@@ -114,8 +114,9 @@ EOD
 		$(".class-id-adddoctorsheet button.class-id-adddoctor").button().on("click",DoAddDoctor);
 		var tbl = $("table.class-id-doctoraddfields");
 		StashElement(tbl);
-		tbl.dataTable({ "sDom":"t","bJQueryUI": true,"bPageinate":false});
-			
+		tbl.dataTable({ "sDom":"t","bJQueryUI": true,"bPageinate":false,
+				iDisplayLength : 15, bSort : false});
+		$("input.class-id-country",tbl).val("USA");
 		$(".class-id-adddoctorsheet").fadeIn('fast',function() {
 			var sm = $(this).data("statemachine");
 			sm.transition();
@@ -238,7 +239,9 @@ EOD
 				"bJQueryUI": true,
 				"sDom": 'T<"clear">lfrtip',
 				"oTableTools": {
-					"sRowSelect": "single"
+					"sRowSelect": "single",
+					"aButtons" : []
+			
 	        	},
 				"aoColumnDefs":
 				[
@@ -269,7 +272,8 @@ EOD
 	$machineFactories["addpatient"]->AddEnterCallback("starting", <<<EOD
 
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().off("click",CancelAddPatient);
-
+		$("table.class-id-patientsondisk").off("click",OnPatientAddRowClick);
+			
 		$(".class-id-addpatientsheet").fadeOut('fast',function() {
 			var q = GetMessageQueue();
 			var smMain = GetStateMachine(".class-id-main");
@@ -287,7 +291,8 @@ EOD
 				bJQueryUI : true,
 				"sDom": 'T<"clear">lfrtip',
 				"oTableTools": {
-					"sRowSelect": "single"
+					"sRowSelect": "single",
+					"aButtons" : []
 	        	},
 				"aoColumnDefs":
 				[
@@ -295,16 +300,23 @@ EOD
 					{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
 				],
 				"aaData" : patientsOnDiskJSON
-			}); 
+			});
+			$(".class-id-addpatientsheet table.class-id-fields").dataTable({
+				bJQueryUI : true,
+				"bSort": false,
+				"sDom": 't',
+				iDisplayLength : 15
+			});
 		});
 		$.getJSON("http://localhost:50505/ajax/GetPeopleInDb", function (patientsInDbJSON) {
+			alert("patientsinDB");
 			$(".class-id-addpatientsheet table.class-id-patientsindb").dataTable({
 				bJQueryUI : true,
-				"sDom": 'T<"clear">lfrtip',
+				"sDom": '<"clear">lfrtip',
 				"oTableTools": {
-					"sRowSelect": "single"
+					"aButtons" : []
 	        	},
-				"aoColumnDefs":
+			"aoColumnDefs":
 				[
 					{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
 					{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
@@ -312,9 +324,19 @@ EOD
 				"aaData" : patientsInDbJSON
 			}); 
 		});
+		alert("leaving state");
+		$("table.class-id-patientsondisk").on("click",OnPatientAddRowClick);
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().on("click",CancelAddPatient);
 		$(".class-id-addpatientsheet button.class-id-addpatient").button().on("click",DoAddPatient);
-		$(".class-id-addpatientsheet input.class-id-dob").datepicker();
+		$(".class-id-addpatientsheet input.class-id-dob").datepicker({
+			changeYear:true,
+			changeMonth: true,
+			maxDate : "-1d",
+			minDate : "-100y",
+			yearRange : "-99:-15",
+			numberOfMonths : [1,3],
+			stepMonths : 3
+		});
 		$(".class-id-addpatientsheet").fadeIn('fast',function() {
 			var sm = $(this).data("statemachine");
 			sm.transition();
