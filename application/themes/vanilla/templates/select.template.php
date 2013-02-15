@@ -1,14 +1,14 @@
 
 <!-- select.template.php -->
-
+<tr>
+<td>
 <?php
 	if(isset($select['#title']))
 	{
-?><span><?php
 		print $select['#title'];
-?></span><?php
     }
-?><select <?php print $select['#classes']; ?> >
+?>
+</td><td><select <?php print $select['#classes']; ?> >
 <?php
 	if(isset($select['#content']))
 	{
@@ -20,4 +20,4 @@
 		}
 	} 
 ?>
-</select>
+</select></td></tr>

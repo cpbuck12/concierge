@@ -58,7 +58,7 @@ class ThemeHook_select extends ThemeHook_widget
 	public function __construct()
 	{
 		parent::__construct();
-		$this->info["type"] = $this->info["render element"] = "date";
+		$this->info["type"] = $this->info["render element"] = "select";
 	}
 	public function Preprocess(&$variables)
 	{

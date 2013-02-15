@@ -223,6 +223,16 @@ function PopulateFiles(after)
 	});
 }
 
+function OnPatientAddRowClick()
+{
+	alert("OnPatientAddRowClick()");
+	var row = $(".class-id-addpatientsheet table.class-id-patientsondisk tr.DTTT_selected td");
+	var firstName = $(row[0]).text();
+	var lastName = $(row[1]).text();
+	$(".class-id-addpatientsheet input.class-id-firstname").val(firstName);
+	$(".class-id-addpatientsheet input.class-id-lastname").val(lastName);
+}
+
 function OnPatientRowClick()
 {
 	var q = GetMessageQueue();
