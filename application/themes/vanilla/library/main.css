@@ -31,11 +31,19 @@ td.ui-state-highlight {
 }
 
 ul.class-id-mainmenu {
-	width : 50%;
+	width : 300px;
+}
+
+ul.class-id-managedoctorsmenu {
+	width : 200px;
 }
 
 table.class-fieldset input {
-	width : 100%;
+	width : 300px;
+}
+
+table.class-fieldset select {
+	width : 300px;
 }
 
 .class-stash {

@@ -262,9 +262,10 @@ function CancelAddDoctor()
 function DoAddDoctor()
 {
 	var vars = [];
+	var o = {};
 	var sheet = $(".class-id-adddoctorsheet");
 	var acc = "";
-	$("fieldset input",sheet).each(function()
+	$(".class-fieldset input",sheet).each(function()
 	{
 		$this = $(this);
 		var classes = $this.attr("class").split(' ');
@@ -273,13 +274,14 @@ function DoAddDoctor()
 			if(classes[i].substr(0,9) == "class-id-")
 			{
 				var id = classes[i].substr(9);
-				acc = acc + id + "\n";
-				acc = acc + $this.val() + "\n";
+				o[id] = $this.val();
+//				acc = acc + id + "\n";
+//				acc = acc + $this.val() + "\n";
 				break;
 			}
 		}
 	});
-	alert("http://localhost:50505/ajax/AddDoctor");
+	acc = JSON.stringify(o);
 	$.ajax({
 		type:"POST",
 		url:"http://localhost:50505/ajax/AddDoctor",
@@ -287,6 +289,7 @@ function DoAddDoctor()
 		dataType:"text",
 		success: function(data)
 		{
+//			var o = JSON.parse(data);
 			var q = GetMessageQueue();
 			var sm = GetStateMachine(".class-id-adddoctorsheet");
 			q.messagepump("send",function() {
@@ -302,9 +305,15 @@ function DoAddDoctor()
 
 function DoAddPatient()
 {
-	var firstName = $(".class-id-addpatientsheet input.class-id-firstname").val();
-	var lastName = $(".class-id-addpatientsheet input.class-id-lastname").val();
-	acc = firstName + "\n" + lastName + "\n";
+	o = {
+		firstName : $(".class-id-addpatientsheet input.class-id-firstname").val(),
+		lastName : $(".class-id-addpatientsheet input.class-id-lastname").val(),
+		dateOfBirth : $(".class-id-addpatientsheet input.class-id-dob").val(),
+		gender : $(".class-id-addpatientsheet select.class-id-gender").val(),
+		emergencyContact : $(".class-id-addpatientsheet input.class-id-emergencycontact").val()
+	};
+	acc = JSON.stringify(o);
+	//acc = firstName + "\n" + lastName + "\n";
 	$.ajax({
 		type:"POST",
 		url:"http://localhost:50505/ajax/AddPatient",
@@ -369,7 +378,7 @@ jQuery(document).ready(function () {
 	/* begin: message pump setup */
 	var abc = jQuery("#hiddenmessagequeueelement");
 	abc.messagepump();
-	abc.messagepump("setinterval",{ delay : 1000 });
+	abc.messagepump("setinterval",{ delay : 100 });
 	/* end: message pump setup */
 	
 	/* begin: state machines setup */

@@ -290,7 +290,14 @@ class ThemeEngine
 								'#value' => 'M'
 							)
 						)
-					)	
+					),
+					array
+					(
+							'#name' => 'emergencycontact',
+							'#theme' => 'textfield',
+							'#type' => 'textfield',
+							'#title' => 'Emergency Contact'
+					)
 				)
 			),
 			"fourth" => array
