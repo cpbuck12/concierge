@@ -193,7 +193,6 @@ function PopulateFiles(after)
 	var row = $("table.class-id-patient tr.DTTT_selected td");
 	var firstName = $(row[0]).text();
 	var lastName = $(row[1]).text();
-	alert("http://localhost:50505/ajax/GetFilesOnDisk");
 	$.getJSON("http://localhost:50505/ajax/GetFilesOnDisk?FirstName="+firstName+"&LastName="+lastName, function (filesOnDiskJSON) {
 		var elem = $("table.class-id-filesystem");
 		elem.show();
@@ -225,7 +224,6 @@ function PopulateFiles(after)
 
 function OnPatientAddRowClick()
 {
-	alert("OnPatientAddRowClick()");
 	var row = $(".class-id-addpatientsheet table.class-id-patientsondisk tr.DTTT_selected td");
 	var firstName = $(row[0]).text();
 	var lastName = $(row[1]).text();
@@ -364,12 +362,10 @@ function DoFileLoading()
 		var o = aData[i];
 		acc = acc + o.Specialty + "\n" + o.Subspecialty + "\n" + o.FullName + "\n";
 	}
-	alert("http://localhost:50505/ajax/UploadFile");
 	$.post("http://localhost:50505/ajax/UploadFile",acc,function(data)
 	{
 		debugger;
 	});
-	debugger;
 	// TODO: load the files
 }
 

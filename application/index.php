@@ -262,17 +262,25 @@ EOD
 
 	
 	$machineFactories["addpatient"] = new StateMachine();
-	$machineFactories["addpatient"]->AddTransition("run","starting","waiting");
-	$machineFactories["addpatient"]->AddTransition("error","waiting","displayingerror");
-	$machineFactories["addpatient"]->AddTransition("continue","displayingerror","waiting");
-	$machineFactories["addpatient"]->AddTransition("cancel","waiting","starting");
-	$machineFactories["addpatient"]->AddTransition("success","waiting","displayingsuccess");
-	$machineFactories["addpatient"]->AddTransition("continue","displayingsuccess","starting");
+	$machineFactories["addpatient"]->AddTransition("run","starting","running");
+	$machineFactories["addpatient"]->AddTransition("loaddb","running","dbloaded");
+	$machineFactories["addpatient"]->AddTransition("error","running","dberror");
+	$machineFactories["addpatient"]->AddTransition("continue","dberror","starting");
+	
+	$machineFactories["addpatient"]->AddTransition("loadfiles","dbloaded","waiting");
+	$machineFactories["addpatient"]->AddTransition("error","dbloaded","fileerror");
+	$machineFactories["addpatient"]->AddTransition("continue","fileerror","starting");
+	
+	$machineFactories["addpatient"]->AddTransition("error","waiting","adderror");
+	$machineFactories["addpatient"]->AddTransition("continue","adderror","starting");
+	$machineFactories["addpatient"]->AddTransition("addpatient","waiting","addsuccess");
+	$machineFactories["addpatient"]->AddTransition("continue","addsuccess","waiting");
 
 	$machineFactories["addpatient"]->AddEnterCallback("starting", <<<EOD
-
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().off("click",CancelAddPatient);
-		$("table.class-id-patientsondisk").off("click",OnPatientAddRowClick);
+		$(".class-id-addpatientsheet button.class-id-addpatient").button().off("click",DoAddPatient).button("disable");
+		$(".class-id-addpatientsheet input.class-id-dob").datepicker("destroy");
+		//$("table.class-id-patientsondisk").off("click",OnPatientAddRowClick);
 			
 		$(".class-id-addpatientsheet").fadeOut('fast',function() {
 			var q = GetMessageQueue();
@@ -282,10 +290,67 @@ EOD
 				smMain.run();
 			});
 		});
-
 EOD
 	);
 	$machineFactories["addpatient"]->AddLeaveCallback("starting", <<<EOD
+
+		$(".class-id-addpatientsheet button.class-id-mainmenu").button().on("click",CancelAddPatient);
+		$(".class-id-addpatientsheet button.class-id-addpatient").button().on("click",DoAddPatient);
+		$(".class-id-addpatientsheet input.class-id-dob").datepicker({
+			changeYear:true,
+			changeMonth: true,
+			maxDate : "-1d",
+			minDate : "-100y",
+			yearRange : "-99:-15"
+		});
+		$(".class-id-addpatientsheet").fadeIn('fast');
+			
+EOD
+	);
+	$machineFactories["addpatient"]->AddEnterCallback("running", <<<EOD
+		$.ajax({
+			type:"POST",
+			url:"http://localhost:50505/ajax/GetPeopleInDb",
+			data:"{}",
+			dataType:"text",
+			success: function(data)
+			{
+				var patientsInDbJSON = JSON.parse(data);
+				$(".class-id-addpatientsheet table.class-id-patientsindb").dataTable({
+					bJQueryUI : true,
+					"sDom": 'T<"clear">lfrtip',
+					"oTableTools": {
+						"sRowSelect": "single",
+						"aButtons" : []
+		        	},
+					"aoColumnDefs":
+					[
+						{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
+						{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
+					],
+					"aaData" : patientsInDbJSON
+				});
+				var q = GetMessageQueue();
+				var sm = GetStateMachine(".class-id-addpatientsheet");
+				q.messagepump("send",function() {
+					sm.loaddb();
+				});
+			},
+			error: function()
+			{
+				var q = GetMessageQueue();
+				var sm = GetStateMachine(".class-id-addpatientsheet");
+				q.messagepump("send",function() {
+					sm.error();
+				});
+			}
+		});
+
+EOD
+	);
+	$machineFactories["addpatient"]->AddEnterCallback("dberror", <<<EOD
+		
+		
 		$.getJSON("http://localhost:50505/ajax/GetPeopleOnDisk", function (patientsOnDiskJSON) {
 			$(".class-id-addpatientsheet table.class-id-patientsondisk").dataTable({
 				bJQueryUI : true,
@@ -309,7 +374,6 @@ EOD
 			});
 		});
 		$.getJSON("http://localhost:50505/ajax/GetPeopleInDb", function (patientsInDbJSON) {
-			alert("patientsinDB");
 			$(".class-id-addpatientsheet table.class-id-patientsindb").dataTable({
 				bJQueryUI : true,
 				"sDom": '<"clear">lfrtip',
@@ -324,7 +388,6 @@ EOD
 				"aaData" : patientsInDbJSON
 			}); 
 		});
-		alert("leaving state");
 		$("table.class-id-patientsondisk").on("click",OnPatientAddRowClick);
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().on("click",CancelAddPatient);
 		$(".class-id-addpatientsheet button.class-id-addpatient").button().on("click",DoAddPatient);

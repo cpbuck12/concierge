@@ -228,6 +228,10 @@ class ThemeEngine
 				)
 			)
 		);
+		$addPatientSheetdatabaseErrorDialogLayerContent = array
+		(
+			
+		);
 		$addPatientSheetmainLayerContent = array
 		(
 			"first" => array
