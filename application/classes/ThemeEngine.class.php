@@ -101,6 +101,13 @@ class ThemeEngine
 							),
 							array
 							(
+								'#name' => 'addspecialtymenuitem',
+								'#title' => 'Add a new specialty',
+								'#theme' => 'menuitem',
+								'#type' => 'menuitem'
+							),
+							array
+							(
 								'#name' => 'registernewpatient',
 								'#title' => 'Register a new Concierge Patient',
 								'#theme' => 'menuitem',
@@ -505,16 +512,54 @@ class ThemeEngine
 				)
 			)
 		);
-		$addDoctorSheetmainLayer = array
+		
+		$addSpecialtySheetmainLayerContent = array 
 		(
-			'#name' => "adddoctormainlayer",
+			"first" => array
+			(
+				'#name' => 'specialtyaddfields',
+				'#theme' => 'fieldset',
+				'#type' => 'fieldset',
+				'#legend' => 'Specialty Information',
+				'#content' => array
+				(
+					array
+					(
+						'#name' => 'specialty',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Specialty'
+					),
+					array
+					(
+						'#name' => 'subspecialty',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Subpecialty'
+					)
+				)
+			)
+		);
+		$addSpecialtySheetmainLayer = array
+		(
+			'#name' => "addspecialtymainlayer",
 			"#theme" => "layer",
 			"#type" => "layer",
-			"#content" => array($addDoctorSheetmainLayerContent)				
+			"#content" => array($addSpecialtySheetmainLayerContent)				
 		);
 		$addDoctorSheetLayers = array();
 		$addDoctorSheetLayers[] = $addDoctorSheetmainLayer;
 		$addDoctorSheet = array ("#name" => "adddoctorsheet", "#title" => "Add New Doctor", "#theme" => "sheet", "#type" => "sheet", '#layers' => $addDoctorSheetLayers);
+		
+		$addSpecialtySheetmainLayer = array
+		(
+			"#name" => "addspecialtymainlayer",
+			"#theme" => "layer",
+			"#content" => array($addSpecialtySheetmainLayerContent)
+		);
+		$addSpecialtySheetLayers = array();
+		$addSpecialtySheetLayers[] = $addSpecialtySheetmainLayer;
+		$addSpecialtySheet = array("#name" => "addspecialtysheet", "#title" => "Add New Specialty", "#theme" => "sheet", "#type" => "sheet", '#layers' => $addSpecialtySheetLayers);
 		
 		$sheets[] = $mainSheet;
 		$sheets[] = $loadfromconciergeSheet;

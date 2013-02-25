@@ -193,6 +193,51 @@ function PopulateFiles(after)
 	var row = $("table.class-id-patient tr.DTTT_selected td");
 	var firstName = $(row[0]).text();
 	var lastName = $(row[1]).text();
+
+	var acc = JSON.stringify({
+		"firstname" : firstName,
+		"lastname" : lastName
+	});
+	$.ajax({
+		type:"POST",
+		url:"http://localhost:50505/ajax/GetFilesOnDisk",
+		data:acc,
+		dataType:"text",
+		success: function(data)
+		{
+			var filesOnDiskJSON = JSON.parse(data);
+			var elem = $("table.class-id-filesystem");
+			elem.show();
+			var oTable = elem.dataTable({
+				"aoColumnDefs":
+					[
+						{ "sTitle": "Hash", bVisible: false, "aTargets": [ 0 ], "mData": "Hash" },
+						{ "sTitle": "First Name", bVisible:false, "aTargets": [ 1 ], "mData": "FirstName" },
+						{ "sTitle": "Last Name", bVisible:false, "aTargets": [ 2 ], "mData": "LastName" },
+						{ "sTitle": "Specialty", "aTargets": [ 3 ], "mData": "Specialty" },
+						{ "sTitle": "Subspecialty", "aTargets": [ 4 ], "mData": "Subspecialty" },
+						{ "sTitle": "Filename", "aTargets": [ 5 ], "mData": "FileName" },
+						{ "sTitle": "Path",bVisible:false, "aTargets": [ 6 ], "mData": "FullName" }
+					],
+				aaData : filesOnDiskJSON.files,
+				bJQueryUI: true,
+				"sDom": 'T<"clear">lfrtip',
+				oTableTools : 
+				{
+					sRowSelect : "multi",
+					fnRowSelected : OnFileSelectionChanged,
+					fnRowDeselected : OnFileSelectionChanged
+				}
+			});
+			if(typeof after === "function")
+				after();
+		},
+		error: function()
+		{
+			alert("ajax failure, danger will robinson!")
+		}
+	});
+/*	
 	$.getJSON("http://localhost:50505/ajax/GetFilesOnDisk?FirstName="+firstName+"&LastName="+lastName, function (filesOnDiskJSON) {
 		var elem = $("table.class-id-filesystem");
 		elem.show();
@@ -220,6 +265,7 @@ function PopulateFiles(after)
 		if(typeof after === "function")
 			after();
 	});
+	*/
 }
 
 function OnPatientAddRowClick()
@@ -355,7 +401,49 @@ function CancelFileLoading()
 }
 
 function DoFileLoading()
-{
+{/*
+	{ "sTitle": "Hash", bVisible: false, "aTargets": [ 0 ], "mData": "Hash" },
+	{ "sTitle": "First Name", bVisible:false, "aTargets": [ 1 ], "mData": "FirstName" },
+	{ "sTitle": "Last Name", bVisible:false, "aTargets": [ 2 ], "mData": "LastName" },
+	{ "sTitle": "Specialty", "aTargets": [ 3 ], "mData": "Specialty" },
+	{ "sTitle": "Subspecialty", "aTargets": [ 4 ], "mData": "Subspecialty" },
+	{ "sTitle": "Filename", "aTargets": [ 5 ], "mData": "FileName" },
+	{ "sTitle": "Path",bVisible:false, "aTargets": [ 6 ], "mData": "FullName" }
+*/
+	oData = {
+        activities : []
+ 	};
+	var elem = $("table.class-id-filesystem");
+	var oTable = elem.dataTable({ bRetrieve: true });
+	var oTT = TableTools.fnGetInstance(elem[0]);
+	var aData = oTT.fnGetSelectedData();
+	for(var i = 0;i < aData.length;i++)
+	{
+		var o = {
+		    path : aData[i].FullName,
+		    specialty : aData[i].Specialty,
+		    subspecialty : aData[i].Subspecialty,
+		    firstname : aData[i].FirstName,
+		    lastname : aData[i].LastName
+		}
+		oData.activities.push(o);
+	}
+	$.ajax({
+		type:"POST",
+		url:"http://localhost:50505/ajax/AddActivities",
+		data:JSON.stringify(oData),
+		dataType:"text",
+		success: function(data)
+		{
+			debugger;
+		},
+		error: function(data)
+		{
+			debugger;
+		}
+	});
+	debugger;
+	/*
 	var elem = $("table.class-id-filesystem");
 	var oTable = elem.dataTable({ bRetrieve: true });
 	var oTT = TableTools.fnGetInstance(elem[0]);
@@ -370,6 +458,7 @@ function DoFileLoading()
 	{
 		debugger;
 	});
+	*/
 	// TODO: load the files
 }
 
@@ -422,6 +511,9 @@ jQuery(document).ready(function () {
 					case "Load file from Concierge Directories":
 						smMain.addfiles();
 						break;
+					case "Add a new specialty":
+						smMain.addspecialty();
+						break;
 					case "Register a new Concierge Patient":
 						smMain.addpatient();
 						break;
@@ -450,6 +542,11 @@ function UpdateAddPatientButton()
 		$("button.class-id-addpatient").button(isOn ? "enable" : "disable");
 	}
 	if(FieldEmpty(".class-id-firstname"))
+	{
+		SetButton(false);
+		return;
+	}
+	if(FieldEmpty(".class-id-lastname"))
 	{
 		SetButton(false);
 		return;
