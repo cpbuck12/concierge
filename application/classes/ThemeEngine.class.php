@@ -248,7 +248,7 @@ class ThemeEngine
 			),
 			"third" => array
 			(
-				'#name' => 'fields',
+				'#name' => 'newpatientfields',
 				'#theme' => 'fieldset',
 				'#type' => 'fieldset',
 				'#legend' => 'New Patient',

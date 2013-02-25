@@ -233,7 +233,6 @@ EOD
 EOD
 	);
 	$machineFactories["addfiles"]->AddEnterCallback("loadingpatients", <<<EOD
-
 			$.getJSON("http://localhost:50505/ajax/GetPeopleOnDisk", function (patientsOnDiskJSON) {
 			var oTable = $("table.class-id-patient").dataTable({
 				"bJQueryUI": true,
@@ -248,7 +247,7 @@ EOD
 					{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
 					{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
 				],
-				"aaData" : patientsOnDiskJSON
+				"aaData" : patientsOnDiskJSON.people
 			});
 			var q = GetMessageQueue();
 			var sm  = GetStateMachine(".class-id-loadfromconciergesheet");
@@ -275,10 +274,64 @@ EOD
 	$machineFactories["addpatient"]->AddTransition("continue","adderror","starting");
 	$machineFactories["addpatient"]->AddTransition("addpatient","waiting","addsuccess");
 	$machineFactories["addpatient"]->AddTransition("continue","addsuccess","waiting");
+	$machineFactories["addpatient"]->AddTransition("cancel","waiting","starting");
 
+	$machineFactories["addpatient"]->AddEnterCallback("addsuccess", <<<EOD
+	
+		var q = GetMessageQueue();
+		var sm = GetStateMachine(".class-id-addpatientsheet");
+		q.messagepump("send",function() {
+			sm.cancel();
+		});
+EOD
+	);
+	$machineFactories["addpatient"]->AddEnterCallback("dbloaded", <<<EOD
+
+		$.ajax({
+			type:"POST",
+			url:"http://localhost:50505/ajax/GetPeopleOnDisk",
+			data:"{}",
+			dataType:"text",
+			success: function(data)
+			{
+				var patientsOnDiskJSON = JSON.parse(data);
+				$(".class-id-addpatientsheet table.class-id-patientsondisk").dataTable({
+					bJQueryUI : true,
+					"sDom": 'T<"clear">lfrtip',
+					"oTableTools": {
+						"sRowSelect": "single",
+						"aButtons" : [],
+						fnRowSelected : OnPatientAddRowClick
+		        	},
+					"aoColumnDefs":
+					[
+						{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
+						{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
+					],
+					"aaData" : patientsOnDiskJSON.people
+				});
+				var q = GetMessageQueue();
+				var sm = GetStateMachine(".class-id-addpatientsheet");
+				q.messagepump("send",function() {
+					sm.loadfiles();
+				});
+},
+			error: function()
+			{
+				var q = GetMessageQueue();
+				var sm = GetStateMachine(".class-id-addpatientsheet");
+				q.messagepump("send",function() {
+					sm.error();
+				});
+			}
+		});
+EOD
+	);
 	$machineFactories["addpatient"]->AddEnterCallback("starting", <<<EOD
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().off("click",CancelAddPatient);
 		$(".class-id-addpatientsheet button.class-id-addpatient").button().off("click",DoAddPatient).button("disable");
+		$(".class-id-newpatientfields input").off("change keyup input",UpdateAddPatientButton);
+		$(".class-id-newpatientfields select").off("change keyup input",UpdateAddPatientButton);
 		$(".class-id-addpatientsheet input.class-id-dob").datepicker("destroy");
 		//$("table.class-id-patientsondisk").off("click",OnPatientAddRowClick);
 			
@@ -296,7 +349,10 @@ EOD
 
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().on("click",CancelAddPatient);
 		$(".class-id-addpatientsheet button.class-id-addpatient").button().on("click",DoAddPatient);
-		$(".class-id-addpatientsheet input.class-id-dob").datepicker({
+		$(".class-id-newpatientfields input").on("change keyup input",UpdateAddPatientButton);
+		$(".class-id-newpatientfields select").on("change keyup input",UpdateAddPatientButton);
+			$(".class-id-newpatientfields select").on("change",UpdateAddPatientButton);
+			$(".class-id-addpatientsheet input.class-id-dob").datepicker({
 			changeYear:true,
 			changeMonth: true,
 			maxDate : "-1d",
@@ -325,10 +381,10 @@ EOD
 		        	},
 					"aoColumnDefs":
 					[
-						{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
-						{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
+						{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "first" },
+						{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "last" },
 					],
-					"aaData" : patientsInDbJSON
+					"aaData" : patientsInDbJSON.patients
 				});
 				var q = GetMessageQueue();
 				var sm = GetStateMachine(".class-id-addpatientsheet");
@@ -336,8 +392,9 @@ EOD
 					sm.loaddb();
 				});
 			},
-			error: function()
+			error: function(o,msg,msg2)
 			{
+				debugger;
 				var q = GetMessageQueue();
 				var sm = GetStateMachine(".class-id-addpatientsheet");
 				q.messagepump("send",function() {
@@ -357,7 +414,8 @@ EOD
 				"sDom": 'T<"clear">lfrtip',
 				"oTableTools": {
 					"sRowSelect": "single",
-					"aButtons" : []
+					"aButtons" : [],
+					"fnRowSelected" : function() { alert("OnPatientAddRowClick"); }
 	        	},
 				"aoColumnDefs":
 				[
@@ -387,8 +445,8 @@ EOD
 				],
 				"aaData" : patientsInDbJSON
 			}); 
-		});
-		$("table.class-id-patientsondisk").on("click",OnPatientAddRowClick);
+		});   
+		$(".class-id-patientsondisk td").on("click",OnPatientAddRowClick);
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().on("click",CancelAddPatient);
 		$(".class-id-addpatientsheet button.class-id-addpatient").button().on("click",DoAddPatient);
 		$(".class-id-addpatientsheet input.class-id-dob").datepicker({

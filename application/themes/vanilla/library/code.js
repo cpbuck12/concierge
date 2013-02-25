@@ -227,8 +227,8 @@ function OnPatientAddRowClick()
 	var row = $(".class-id-addpatientsheet table.class-id-patientsondisk tr.DTTT_selected td");
 	var firstName = $(row[0]).text();
 	var lastName = $(row[1]).text();
-	$(".class-id-addpatientsheet input.class-id-firstname").val(firstName);
-	$(".class-id-addpatientsheet input.class-id-lastname").val(lastName);
+	$(".class-id-addpatientsheet input.class-id-firstname").val(firstName).trigger("change");
+	$(".class-id-addpatientsheet input.class-id-lastname").val(lastName).trigger("change");
 }
 
 function OnPatientRowClick()
@@ -320,14 +320,18 @@ function DoAddPatient()
 		success: function(data)
 		{
 			var q = GetMessageQueue();
-			var sm = GetStateMachine(".class-id-adddoctorsheet");
+			var sm = GetStateMachine(".class-id-addpatientsheet");
 			q.messagepump("send",function() {
-				sm.success();
+				sm.addpatient();
 			});
 		},
 		error: function()
 		{
-			alert("ajax failure, danger will robinson!")
+			var q = GetMessageQueue();
+			var sm = GetStateMachine(".class-id-addpatientsheet");
+			q.messagepump("send",function() {
+				sm.error();
+			});
 		}
 	});
 }
@@ -429,3 +433,37 @@ jQuery(document).ready(function () {
 	);
 	smMain.run();
 });
+
+function UpdateAddPatientButton()
+{
+	function FieldEmpty(name)
+	{
+		var s = $(".class-id-newpatientfields " + name).val();
+		s = $.trim(s);
+		if(s == "")
+			return true;
+		else
+			return false;
+	}
+	function SetButton(isOn)
+	{
+		$("button.class-id-addpatient").button(isOn ? "enable" : "disable");
+	}
+	if(FieldEmpty(".class-id-firstname"))
+	{
+		SetButton(false);
+		return;
+	}
+	if(FieldEmpty(".class-id-dob"))
+	{
+		SetButton(false);
+		return;
+	}
+	if(FieldEmpty(".class-id-emergencycontact"))
+	{
+		SetButton(false);
+		return;
+	}
+	SetButton(true);
+}
+
