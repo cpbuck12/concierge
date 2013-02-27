@@ -173,9 +173,11 @@ function OutterHtml(elem)
 
 function StashElement(elem)
 {
-	var origHtml = OutterHtml(elem);
-	origHtml = Base64.encode(origHtml);
-	elem.before("<div class='class-stash'>"+origHtml+"</div>");
+	$(elem).each(function() {
+		var origHtml = OutterHtml(this);
+		origHtml = Base64.encode(origHtml);
+		$(this).before("<div class='class-stash'>"+origHtml+"</div>");
+	});
 }
 
 function UnstashElement(elem,remover)
@@ -293,7 +295,58 @@ function OnPatientRowClick()
 	});
 }
 
+function CancelAddSpecialty()
+{
+	var q = GetMessageQueue();
+	var sm = GetStateMachine(".class-id-addspecialtysheet");
+	q.messagepump("send",function() {
+		sm.cancel();
+	});
+}
 
+function DoAddSpecialty()
+{
+	var vars = [];
+	var o = {};
+	var sheet = $(".class-id-addspecialtysheet");
+	var acc = "";
+	$(".class-fieldset input",sheet).each(function()
+	{
+		$this = $(this);
+		var classes = $this.attr("class").split(' ');
+		for(var i = 0;i < classes.length;i++)
+		{
+			if(classes[i].substr(0,9) == "class-id-")
+			{
+				var id = classes[i].substr(9);
+				o[id] = $this.val();
+//				acc = acc + id + "\n";
+//				acc = acc + $this.val() + "\n";
+				break;
+			}
+		}
+	});
+	acc = JSON.stringify(o);
+	$.ajax({
+		type:"POST",
+		url:"http://localhost:50505/ajax/AddSpecialty",
+		data:acc,
+		dataType:"text",
+		success: function(data)
+		{
+//			var o = JSON.parse(data);
+			var q = GetMessageQueue();
+			var sm = GetStateMachine(".class-id-addspecialtysheet");
+			q.messagepump("send",function() {
+				sm.success();
+			});
+		},
+		error: function()
+		{
+			alert("ajax failure, danger will robinson!")
+		}
+	});
+}
 function CancelAddDoctor()
 {
 	var q = GetMessageQueue();
@@ -428,6 +481,7 @@ function DoFileLoading()
 		}
 		oData.activities.push(o);
 	}
+	debugger;
 	$.ajax({
 		type:"POST",
 		url:"http://localhost:50505/ajax/AddActivities",
@@ -475,6 +529,7 @@ jQuery(document).ready(function () {
 	SetStateMachine(".class-id-loadfromconciergesheet",StateMachineFactories["addfiles"]());
 	SetStateMachine(".class-id-adddoctorsheet",StateMachineFactories["adddoctor"]());
 	SetStateMachine(".class-id-addpatientsheet",StateMachineFactories["addpatient"]());
+	SetStateMachine(".class-id-addspecialtysheet",StateMachineFactories["addspecialty"]());
 	/* end: state machines setup */
 
 	$(".class-initially-hidden").hide().removeClass("class-initially-hidden");

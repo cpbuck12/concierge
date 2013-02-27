@@ -517,6 +517,12 @@ class ThemeEngine
 		(
 			"first" => array
 			(
+					"#name" => "specialtiesindb",
+					"#theme" => "table",
+					"#type" => "table"
+			),
+			"second" => array
+			(
 				'#name' => 'specialtyaddfields',
 				'#theme' => 'fieldset',
 				'#type' => 'fieldset',
@@ -535,17 +541,35 @@ class ThemeEngine
 						'#name' => 'subspecialty',
 						'#theme' => 'textfield',
 						'#type' => 'textfield',
-						'#title' => 'Subpecialty'
+						'#title' => 'Subspecialty'
 					)
 				)
+			),
+			"third" => array
+			(
+				array
+				(
+					'#name' => 'mainmenu',
+					'#theme' => 'button',
+					'#type' => 'button',
+					'#content' => 'Main Menu'					
+				),
+				array
+				(
+					'#name' => 'addspecialty',
+					'#theme' => 'button',
+					'#type' => 'button',
+					'#content' => 'Add Specialty'
+				)
 			)
+				
 		);
-		$addSpecialtySheetmainLayer = array
+		$addDoctorSheetmainLayer  = array
 		(
-			'#name' => "addspecialtymainlayer",
+			'#name' => "adddoctormainlayer",
 			"#theme" => "layer",
 			"#type" => "layer",
-			"#content" => array($addSpecialtySheetmainLayerContent)				
+			"#content" => array($addDoctorSheetmainLayerContent)				
 		);
 		$addDoctorSheetLayers = array();
 		$addDoctorSheetLayers[] = $addDoctorSheetmainLayer;
@@ -567,6 +591,7 @@ class ThemeEngine
 		$sheets[] = $browseDocumentsSheet;
 		$sheets[] = $createreportSheet;
 		$sheets[] = $addDoctorSheet;
+		$sheets[] = $addSpecialtySheet;
 		$messagePumpPlugin = new MessagePump();
 		$inlineCode = $messagePumpPlugin->Snippet(); 
 		$result = array

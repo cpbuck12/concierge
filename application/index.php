@@ -26,17 +26,17 @@ EOD
 	$machineFactories["mainmenu"]->AddLeaveCallback("starting", <<<EOD
 		$(".class-id-main").fadeIn('fast',function() {
 			var sm = $(this).data("statemachine");
-			sm.transition();
+//			sm.transition();
 		});
-		return StateMachine.ASYNC;
+		return true;
 EOD
 	);
 	$machineFactories["mainmenu"]->AddLeaveCallback("waiting", <<<EOD
 		$(".class-id-main").fadeOut('fast',function() {
 			var sm = $(this).data("statemachine");
-			sm.transition();			
+//			sm.transition();			
 		});
-		return StateMachine.ASYNC;
+		return true;
 EOD
 	);
 	$machineFactories["mainmenu"]->AddEnterCallback("addingfiles", <<<EOD
@@ -87,9 +87,16 @@ EOD
 	$machineFactories["addspecialty"]->AddTransition("run","starting","waiting");
 	$machineFactories["addspecialty"]->AddTransition("error","waiting","displayingerror");
 	$machineFactories["addspecialty"]->AddTransition("continue","displayingerror","waiting");
-	$machineFactories["addspecialty"]->AddTransition("cancel","waiting","starting");
+	$machineFactories["addspecialty"]->AddTransition("cancel","waiting","zombie");
 	$machineFactories["addspecialty"]->AddTransition("success","waiting","displayingsuccess");
-	$machineFactories["addspecialty"]->AddTransition("continue","displayingsuccess","starting");
+	$machineFactories["addspecialty"]->AddTransition("continue","displayingsuccess","zombie");
+	$machineFactories["addspecialty"]->AddTransition("continue","zombie","starting");
+
+	$machineFactories["addspecialty"]->AddLeaveCallback("starting", <<<EOD
+
+		alert("leaving starting");
+EOD
+	);
 	
 	$machineFactories["addspecialty"]->AddEnterCallback("displayingsuccess", <<<EOD
 		
@@ -101,7 +108,8 @@ EOD
 		});
 EOD
 	);
-	$machineFactories["addspecialty"]->AddEnterCallback("starting", <<<EOD
+	$machineFactories["addspecialty"]->AddLeaveCallback("zombie", <<<EOD
+		
 		$(".class-id-addspecialtysheet button.class-id-mainmenu").button().off("click",CancelAddSpecialty);
 		$(".class-id-addspecialtysheet button.class-id-addspecialty").button().off("click",DoAddSpecialty);
 		var tbl = $("table.class-id-specialtyaddfields");
@@ -131,9 +139,43 @@ EOD
 				iDisplayLength : 15, bSort : false});
 		$(".class-id-addspecialtysheet").fadeIn('fast',function() {
 			var sm = $(this).data("statemachine");
-			sm.transition();
+			//sm.transition();
 		});
-		return StateMachine.ASYNC;
+		$.ajax({
+			type:"POST",
+			url:"http://localhost:50505/ajax/GetSpecialties",
+			data:"{}",
+			dataType:"text",
+			success: function(data)
+			{
+				debugger;
+				var specialtiesJSON = JSON.parse(data);
+				$(".class-id-addspecialtysheet table.class-id-specialtiesindb").dataTable({
+					bJQueryUI : true,
+					"sDom": 'T<"clear">lfrtip',
+					"oTableTools": {
+						"sRowSelect": "single",
+						"aButtons" : [],
+						fnRowSelected : OnPatientAddRowClick
+		        	},
+					"aoColumnDefs":
+					[
+						{ "sTitle": "Specialty", "aTargets": [ 0 ], "mData": "specialty" },
+						{ "sTitle": "Sub-specialty", "aTargets": [ 1 ], "mData": "subspecialty" }
+					],
+					"aaData" : specialtiesJSON.specialties
+				});
+			},
+			error: function()
+			{
+				var q = GetMessageQueue();
+				var sm = GetStateMachine(".class-id-addpatientsheet");
+				q.messagepump("send",function() {
+					sm.error();
+				});
+			}
+		});
+		return true;
 	
 EOD
 	);
@@ -191,7 +233,7 @@ EOD
 			var sm = $(this).data("statemachine");
 			sm.transition();
 		});
-		return StateMachine.ASYNC;
+		return true;
 
 EOD
 	);
@@ -298,7 +340,7 @@ EOD
 			var sm = $(this).data("statemachine");
 			sm.transition();
 		});
-		return StateMachine.ASYNC;
+		return true;
 
 EOD
 	);
@@ -532,13 +574,13 @@ EOD
 			var sm = $(this).data("statemachine");
 			sm.transition();
 		});
-		return StateMachine.ASYNC;
+		return true;
 	
 EOD
 	);
 
 	
-	$acc = "/* Generated from __FILE__ */\n";
+	$acc = "/* Generated from ". __FILE__. " */\n";
 	$acc .= "var StateMachineFactories = new Array();\n";
 	foreach($machineFactories as $name => $machineFactory)
 	{
