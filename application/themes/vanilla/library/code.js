@@ -1,3 +1,5 @@
+var StateMachineFactories = new Array();
+
 var Base64 = {
 // private property
 _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
@@ -136,9 +138,17 @@ function GetMessageQueue()
 	return jQuery("#hiddenmessagequeueelement");
 }
 
-function GetStateMachine(selector)
+function GetStateMachine()
 {
-	var e = jQuery(selector);
+	var e;
+	if(arguments.length == 0)
+	{
+		e = jQuery(this);
+	}
+	else
+	{
+		e = jQuery(arguments[0]);
+	}
 	return e.data("statemachine");
 }
 

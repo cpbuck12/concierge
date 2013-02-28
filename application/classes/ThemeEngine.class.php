@@ -381,6 +381,12 @@ class ThemeEngine
 		(
 			"first" => array
 			(
+				'#name' => 'doctorlist',
+				'#theme' => 'table',
+				'#type' => 'table'
+			),
+			"second" => array
+			(
 				'#name' => 'doctoraddfields',
 				'#theme' => 'fieldset',
 				'#type' => 'fieldset',
@@ -494,7 +500,7 @@ class ThemeEngine
 					)
 				)
 			),
-			"second" => array
+			"third" => array
 			(
 				array
 				(
@@ -585,6 +591,48 @@ class ThemeEngine
 		$addSpecialtySheetLayers[] = $addSpecialtySheetmainLayer;
 		$addSpecialtySheet = array("#name" => "addspecialtysheet", "#title" => "Add New Specialty", "#theme" => "sheet", "#type" => "sheet", '#layers' => $addSpecialtySheetLayers);
 		
+		$folderBrowserSheetmainLayerContent = array
+		(
+			"volumes" => array
+			(
+				"#name" => "volumes",
+				"#theme" => "table",
+				"#type" => "table"
+			),
+			"folders" => array
+			(
+				"#name" => "folders",
+				"#theme" => "table",
+				"#type" => "table"
+			),
+			"buttons" => array
+			(
+				"open" => array
+				(
+					'#name' => 'open',
+					'#theme' => 'button',
+					'#type' => 'button',
+					'#content' => 'Open'
+				),	
+				"cancel" => array
+				(
+					'#name' => 'cancel',
+					'#theme' => 'button',
+					'#type' => 'button',
+					'#content' => 'Cancel'
+				)
+			)
+		);
+		$folderBrowserSheetmainLayer = array
+		(
+			"#name" => "folderbrowsermainlayer",
+			"#theme" => "layer",
+			"#content" => array($folderBrowserSheetmainLayerContent)
+		);
+		$folderBrowserSheetLayers = array();
+		$folderBrowserSheetLayers[] = $folderBrowserSheetmainLayer;
+		$folderBrowserSheet = array("#name" => "folderbrowsersheet", "#title" => "Folder Browser", "#theme" => "sheet", "#type" => "sheet", '#layers' => $folderBrowserSheetLayers);
+		
 		$sheets[] = $mainSheet;
 		$sheets[] = $loadfromconciergeSheet;
 		$sheets[] = $addPatientSheet;
@@ -592,6 +640,7 @@ class ThemeEngine
 		$sheets[] = $createreportSheet;
 		$sheets[] = $addDoctorSheet;
 		$sheets[] = $addSpecialtySheet;
+		$sheets[] = $folderBrowserSheet;
 		$messagePumpPlugin = new MessagePump();
 		$inlineCode = $messagePumpPlugin->Snippet(); 
 		$result = array
