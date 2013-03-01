@@ -605,6 +605,12 @@ class ThemeEngine
 				"#theme" => "table",
 				"#type" => "table"
 			),
+			"files" => array
+			(
+				"#name" => "files",
+				"#theme" => "table",
+				"#type" => "table"
+			),
 			"buttons" => array
 			(
 				"open" => array
@@ -613,7 +619,14 @@ class ThemeEngine
 					'#theme' => 'button',
 					'#type' => 'button',
 					'#content' => 'Open'
-				),	
+				),
+				"ok" => array
+				(
+					'#name' => 'ok',
+					'#theme' => 'button',
+					'#type' => 'button',
+					'#content' => 'Ok'
+				),
 				"cancel" => array
 				(
 					'#name' => 'cancel',

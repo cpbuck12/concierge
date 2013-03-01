@@ -152,6 +152,48 @@ function GetStateMachine()
 	return e.data("statemachine");
 }
 
+function FunnelMessage(sm,cat,func)
+{
+	var q = GetMessageQueue();
+	q.messagepump(cat,function() {
+		func(sm);
+	});
+}
+
+function SendMessage()
+{
+	var sm;
+	var func;
+	if(arguments.length == 1)
+	{
+		sm = GetStateMachine();
+		func = arguments[0];
+	}
+	else
+	{
+		sm = GetStateMachine(arguments[0]);
+		func = arguments[1];
+	}
+	FunnelMessage(sm,"send",func);
+}
+
+function PostMessage()
+{
+	var sm;
+	var func;
+	if(arguments.length == 1)
+	{
+		sm = GetStateMachine();
+		func = arguments[0];
+	}
+	else
+	{
+		sm = GetStateMachine(arguments[0]);
+		func = arguments[1];
+	}
+	FunnelMessage(sm,"post",func);
+}
+
 function SetStateMachine(selector,machine)
 {
 	jQuery(selector).data("statemachine",machine);
@@ -312,6 +354,63 @@ function CancelAddSpecialty()
 	q.messagepump("send",function() {
 		sm.cancel();
 	});
+}
+
+function DoChangeFolder()
+{
+	var elem = $(".class-id-folderbrowsersheet table.class-id-folders");
+	var oTable = elem.dataTable({ bRetrieve : true });
+	var oTableTools;
+	elem.each(function() { oTableTools =  TableTools.fnGetInstance(this); } );
+    var aData = oTableTools.fnGetSelectedData();
+    var newFolder = aData[0].FullName;
+    
+    var elemFiles = $(".class-id-folderbrowsersheet table.class-id-files");
+	var oTableFiles = elemFiles.dataTable({ bRetrieve : true });
+	var oTableToolsFiles;
+	elemFiles.each(function() { oTableToolsFiles =  TableTools.fnGetInstance(this); } );
+
+	$.ajax({
+		type:"POST",
+		url:"http://localhost:50505/ajax/SetCurrentDirectory",
+		data:JSON.stringify({ path : newFolder }),
+		dataType:"text",
+		success: function(data)
+		{
+			var result = JSON.parse(data);
+			if(result["status"] == "ok")
+			{
+				var fileInfo = result.fileInfo;
+				var currentPath = fileInfo.currentPath;
+				var files = fileInfo.files;
+				var folders = fileInfo.folders;
+				var volumes = fileInfo.volumes;
+				oTable.fnClearTable();
+				var i;
+				for(i = 0;i < folders.length;i++)
+				{
+					
+					var a = [];
+					o = { Name : folders[i].Name, FullName : folders[i].FullName };
+					a[0] = folders[i].Name;
+					a[1] = folders[i].FullName;
+					oTable.fnAddData(o);
+				}
+				oTableFiles.fnClearTable();
+				for(i = 0;i < files.length;i++)
+				{
+					o = {
+						Name : files[i].Name,
+						Length : files[i].Length,
+						LastWriteTime : files[i].LastWriteTime,
+						FullName : files[i].FullName
+					}
+					oTableFiles.fnAddData(o);
+				}
+			}
+		}
+	});
+	debugger;
 }
 
 function DoAddSpecialty()
@@ -540,6 +639,7 @@ jQuery(document).ready(function () {
 	SetStateMachine(".class-id-adddoctorsheet",StateMachineFactories["adddoctor"]());
 	SetStateMachine(".class-id-addpatientsheet",StateMachineFactories["addpatient"]());
 	SetStateMachine(".class-id-addspecialtysheet",StateMachineFactories["addspecialty"]());
+	SetStateMachine(".class-id-folderbrowsersheet",StateMachineFactories["folderbrowser"]());
 	/* end: state machines setup */
 
 	$(".class-initially-hidden").hide().removeClass("class-initially-hidden");
@@ -584,6 +684,10 @@ jQuery(document).ready(function () {
 						break;
 					case "Add New Doctor":
 						smMain.adddoctor();
+						break;
+					case "Create Website":
+						smMain.createwebsite();
+						break;
 				}
 			}
 		}
