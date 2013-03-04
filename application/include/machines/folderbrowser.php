@@ -65,10 +65,11 @@ $machineFactories["folderbrowser"]->AddEnterCallback("initializing", <<<EOD
 					"sDom": 'T<"clear">lfrtip',
 					"oTableTools":
 					{
+						"sRowSelect": "single",
 						"aButtons" : [],
 						"fnRowSelected" : function(nodes)
 						{
-//							var fullName = $(nodes[1]).val();
+							var name = $(nodes[0]).val();
 //							SendMessage(".class-id-folderbrowsersheet",function(sm) { sm.choose(); }); 
 						}
 					},
