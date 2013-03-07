@@ -88,7 +88,11 @@ $machineFactories["mainmenu"]->AddEnterCallback("creatingwebsite", <<<EOD
 		var saveThis = this;
 		var smOther = GetStateMachine(".class-id-folderbrowsersheet");
 		q.messagepump("send",function() {
-			smOther.run(saveThis);
+			//smOther.run(saveThis);
+			smOther.run({
+				machine : saveThis,
+				type: "folder" // "file"
+			});
 		});
 		
 		return true;

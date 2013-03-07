@@ -222,6 +222,170 @@ function OutterHtml(elem)
 {
 	return $(elem).clone().wrap("<p>").parent().html();
 }
+/*
+var prev_elem = $(elem).prev();
+var divText = Base64.decode(prev_elem.text());
+remover();
+prev_elem.after(divText);
+prev_elem.remove();
+*/
+function UnstashTable(element)
+{
+	var oTable;
+	var parent = $(element).parent();
+	var prev_elem = $(parent).prev();
+	oTable = $(element).dataTable({bRetrieve : true});
+	oTable.fnDestroy();
+	$(element).remove();
+	var divText = Base64.decode(prev_elem.text());
+	$(parent).remove();
+	prev_elem.after(divText);
+	var result = prev_elem.next();
+	prev_elem.remove();
+	return result;
+}
+
+function FileBrowserOk()
+{
+    var FullName = 	$(".class-id-folderbrowsersheet div.class-id-folderlabel").text();
+
+	SendMessage(".class-id-folderbrowsersheet",function(sm) {
+		debugger;
+		sm.done({
+			button : "ok",
+			filename : FullName
+		});
+	}); 
+}
+
+function FileBrowserOpen()
+{
+	var filesElement = $(".class-id-folderbrowsersheet table.class-id-files");
+	var oTable = $(filesElement).dataTable({bRetrieve : true});
+	var oTableTools;
+	$(filesElement).each(function(){ oTableTools = TableTools.fnGetInstance(this); });
+    var aData = oTableTools.fnGetSelectedData();
+    var FullName = aData[0].FullName;  // This has NOT BEEN CHECKED
+	SendMessage(".class-id-folderbrowsersheet",function(sm) {
+		sm.done({
+			button : "open",
+			foldername : FullName
+		});
+	}); 
+}
+
+function FileBrowserCancel()
+{
+	SendMessage(".class-id-folderbrowsersheet",function(sm) {
+		sm.done({
+			button : "cancel",
+		});
+	}); 
+}
+
+function BuildFileBrowser(data,foldersElement,volumesElement,filesElement,firstTime,type)
+{
+//	var oTable = elem.dataTable({ bRetrieve : true });
+//	var oTableTools;
+//	elem.each(function() { oTableTools =  TableTools.fnGetInstance(this); } );
+	if(!firstTime)
+	{
+		/*
+		var oTable;
+		oTable = $(foldersElement).dataTable({bRetrieve : true});
+		oTable.fnDestroy();
+		oTable = $(volumesElement).dataTable({bRetrieve : true});
+		oTable.fnDestroy();
+		oTable = $(filesElement).dataTable({bRetrieve : true});
+		oTable.fnDestroy();
+		UnstashElement(foldersElement,function() {
+			$(foldersElement).remove();
+		});
+		UnstashElement(volumesElement,function() {
+			$(volumesElement).remove();
+		});
+		UnstashElement(filesElement,function() {
+			$(filesElement).remove();
+		});
+		*/
+		foldersElement = UnstashTable(foldersElement);
+		volumesElement = UnstashTable(volumesElement);
+		filesElement = UnstashTable(filesElement)
+	}
+	StashElement(foldersElement);
+	StashElement(volumesElement);
+	StashElement(filesElement);
+	var result = JSON.parse(data);
+	if(result.status == "ok")
+	{
+		var fileInfo = result.fileInfo;
+		var currentPath = fileInfo.currentPath;
+		var files = fileInfo.files;
+		var folders = fileInfo.folders;
+		var volumes = fileInfo.volumes;
+		$(".class-id-folderbrowsersheet div.class-id-folderlabel").text(currentPath);
+		$(foldersElement).dataTable({
+			bJQueryUI : true,
+			bSort : false,
+			"sDom": 'T<"clear">tp',
+			"oTableTools": {
+				"sRowSelect": "single",
+				"aButtons" : [],
+				"fnRowSelected" : function(nodes) {
+					var fullName = $(nodes[1]).val();
+					SendMessage(".class-id-folderbrowsersheet",function(sm) { sm.choose("folder"); }); 
+				}
+			},
+			"aoColumnDefs":
+			[
+				{ "sTitle": "Name", "aTargets": [ 0 ], "mData": "Name" },
+				{ "sTitle": "FullName", "aTargets": [ 1 ], "mData": "FullName", bVisible : false },
+			],
+			"aaData" : folders
+		});
+		$(volumesElement).dataTable({
+			bSort : false,
+			bJQueryUI : true,
+			"sDom": 'T<"clear">tp',
+			"oTableTools":
+			{
+				"sRowSelect": "single",
+				"aButtons" : [],
+				"fnRowSelected" : function(nodes)
+				{
+					var name = $(nodes[0]).val();
+					debugger;
+					SendMessage(".class-id-folderbrowsersheet",function(sm) { sm.choose("volume"); }); 
+				}
+			},
+			"aoColumnDefs": [{"sTitle" : "Volume", "aTargets" : [0], "mData" : "Name" }],
+			"aaData" : volumes
+		});
+		$(filesElement).dataTable({
+			bJQueryUI : true,
+			bSort : false,
+			"sDom": 'T<"clear">lfrtip',
+			"oTableTools": {
+				"sRowSelect": ((type == "file") ? "single" : ""),
+				"aButtons" : [],
+				"fnRowSelected" : function(nodes)
+				{
+					var name = $(nodes[0]).val();
+					SendMessage(".class-id-folderbrowsersheet",function(sm) { sm.choose("file"); }); 
+				}
+			},
+			"aoColumnDefs":
+			[
+				{ "sTitle": "Name", "aTargets": [ 0 ], "mData": "Name" },
+				{ "sTitle": "Size", "aTargets": [ 1 ], "mData": "Length" },
+				{ "sTitle": "Modified", "aTargets": [ 2 ], "mData": "LastWriteTime" },
+				{ "sTitle": "FullName", "aTargets": [ 3 ], "mData": "FullName", bVisible : false },
+			],
+			"aaData" : files
+		});
+		SendMessage(".class-id-folderbrowsersheet",function(sm) { sm.initialize(); }); 
+	}
+}
 
 function StashElement(elem)
 {

@@ -53,6 +53,36 @@ class ThemeHook_date extends ThemeHook_widget
 	}
 }
 
+class ThemeHook_label extends ThemeHook_widget
+{
+	public function __construct()
+	{
+		parent::__construct();
+		$this->info["type"] = $this->info["render element"] = "label";
+	}
+	public function Preprocess(&$variables)
+	{
+		$variables['label']['#classes_array'][] = 'class-label';
+		$variables['label']['#classes_array'][] = 'class-id-' . $variables['label']['#name'];
+		$variables['label']["#classes"] = "class='" . implode(" ",$variables['label']["#classes_array"]) . "'";
+	}
+}
+
+class ThemeHook_block extends ThemeHook_widget
+{
+	public function __construct()
+	{
+		parent::__construct();
+		$this->info["type"] = $this->info["render element"] = "block";
+	}
+	public function Preprocess(&$variables)
+	{
+		$variables['block']['#classes_array'][] = 'class-block';
+		$variables['block']['#classes_array'][] = 'class-id-' . $variables['block']['#name'];
+		$variables['block']["#classes"] = "class='" . implode(" ",$variables['block']["#classes_array"]) . "'";
+	}
+}
+
 class ThemeHook_select extends ThemeHook_widget
 {
 	public function __construct()

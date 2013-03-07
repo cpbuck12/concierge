@@ -34,6 +34,11 @@ ul.class-id-mainmenu {
 	width : 300px;
 }
 
+//table.class-id-volumes {
+//	width : 25%;
+//}
+
+
 ul.class-id-managedoctorsmenu {
 	width : 200px;
 }
@@ -48,6 +53,13 @@ table.class-fieldset select {
 
 .class-stash {
 	display: none;
+}
+div.class-id-volumesblock {
+	float: left;
+}
+
+div.class-id-foldersblock {
+	float: left;
 }
 /*
 .dataTables_filter select, .dataTables_filter input

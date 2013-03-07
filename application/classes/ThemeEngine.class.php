@@ -593,23 +593,49 @@ class ThemeEngine
 		
 		$folderBrowserSheetmainLayerContent = array
 		(
-			"volumes" => array
+			"block0" => array
 			(
-				"#name" => "volumes",
-				"#theme" => "table",
-				"#type" => "table"
+				"#name" => "folderlabel",
+				"#theme" => "label",
+				"#type" => "label",
+				"#text" => "FOLDER"
 			),
-			"folders" => array
+			"block1" => array
 			(
-				"#name" => "folders",
-				"#theme" => "table",
-				"#type" => "table"
+				"#name" => "volumesblock",
+				"#theme" => "block",
+				"#type" => "block",
+				"#content" => array
+				(
+					"volumes" => array
+					(
+						"#name" => "volumes",
+						"#theme" => "table",
+						"#type" => "table"
+					)
+				)
+			),
+			"block2" => array
+			(
+				"#name" => "foldersblock",
+				"#theme" => "block",
+				"#type" => "block",
+				"#content" => array
+				(
+					"folders" => array
+					(
+						"#name" => "folders",
+						"#theme" => "table",
+						"#type" => "table"
+					)
+				)
+					
 			),
 			"files" => array
 			(
-				"#name" => "files",
-				"#theme" => "table",
-				"#type" => "table"
+					"#name" => "files",
+					"#theme" => "table",
+					"#type" => "table"
 			),
 			"buttons" => array
 			(
