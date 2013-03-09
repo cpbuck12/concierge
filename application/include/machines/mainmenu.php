@@ -5,11 +5,13 @@ $machineFactories["mainmenu"]->AddTransition("run", "starting", "waiting");
 $machineFactories["mainmenu"]->AddTransition("addpatient", "waiting", "addingpatient");
 $machineFactories["mainmenu"]->AddTransition("addfiles", "waiting", "addingfiles");
 $machineFactories["mainmenu"]->AddTransition("adddoctor", "waiting", "addingdoctor");
+$machineFactories["mainmenu"]->AddTransition("listdoctors", "waiting", "listdoctors");
 $machineFactories["mainmenu"]->AddTransition("addspecialty", "waiting", "addingspecialty");
 $machineFactories["mainmenu"]->AddTransition("createwebsite", "waiting", "creatingwebsite");
 $machineFactories["mainmenu"]->AddTransition("run", "addingfiles", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingpatient", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingdoctor", "waiting");
+$machineFactories["mainmenu"]->AddTransition("run", "listdoctors", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingspecialty", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "creatingwebsite", "waiting");
 
@@ -40,10 +42,8 @@ EOD
 );
 $machineFactories["mainmenu"]->AddEnterCallback("addingfiles", <<<EOD
 
-		var q = GetMessageQueue(); // jQuery("#hiddenmessagequeueelement");
-		var smOther = GetStateMachine(".class-id-loadfromconciergesheet");
-		q.messagepump("send",function() {
-			smOther.run();
+		SendMessage(".class-id-loadfromconciergesheet",function(sm) {
+			sm.run();
 		});
 		return true;
 EOD
@@ -51,21 +51,27 @@ EOD
 
 $machineFactories["mainmenu"]->AddEnterCallback("addingdoctor", <<<EOD
 
-		var q = GetMessageQueue();
-		var smOther = GetStateMachine(".class-id-adddoctorsheet");
-		q.messagepump("send",function() {
-			smOther.run();
+		SendMessage(".class-id-adddoctorsheet",function(sm) {
+			sm.run();
 		});
 		return true;
 EOD
 );
 
+$machineFactories["mainmenu"]->AddEnterCallback("listdoctors", <<<EOD
+
+		SendMessage(".class-id-updatedoctorsheet",function(sm) {
+			sm.run();
+		});
+		return true;
+EOD
+);
+
+
 $machineFactories["mainmenu"]->AddEnterCallback("addingpatient", <<<EOD
 
-		var q = GetMessageQueue();
-		var smOther = GetStateMachine(".class-id-addpatientsheet");
-		q.messagepump("send",function() {
-			smOther.run();
+		var smOther = SendMessage(".class-id-addpatientsheet",function(sm) {
+			sm.run();
 		});
 		return true;
 EOD
@@ -73,10 +79,8 @@ EOD
 
 $machineFactories["mainmenu"]->AddEnterCallback("addingspecialty", <<<EOD
 
-		var q = GetMessageQueue();
-		var smOther = GetStateMachine(".class-id-addspecialtysheet");
-		q.messagepump("send",function() {
-			smOther.run();
+		var smOther = SendMessage(".class-id-addspecialtysheet",function(sm) {
+			sm.run();
 		});
 		return true;
 EOD
@@ -86,15 +90,12 @@ $machineFactories["mainmenu"]->AddEnterCallback("creatingwebsite", <<<EOD
 
 		var q = GetMessageQueue();
 		var saveThis = this;
-		var smOther = GetStateMachine(".class-id-folderbrowsersheet");
-		q.messagepump("send",function() {
-			//smOther.run(saveThis);
-			smOther.run({
+		var smOther = SendMessage(".class-id-folderbrowsersheet",function(sm) {
+			sm.run({
 				machine : saveThis,
 				type: "folder" // "file"
 			});
 		});
-		
 		return true;
 EOD
 );

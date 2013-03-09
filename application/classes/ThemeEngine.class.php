@@ -580,6 +580,188 @@ class ThemeEngine
 		$addDoctorSheetLayers = array();
 		$addDoctorSheetLayers[] = $addDoctorSheetmainLayer;
 		$addDoctorSheet = array ("#name" => "adddoctorsheet", "#title" => "Add New Doctor", "#theme" => "sheet", "#type" => "sheet", '#layers' => $addDoctorSheetLayers);
+
+		
+		
+		
+		$updateDoctorSheetmainLayerContent = array
+		(
+			"block0" => array
+			(
+				"#name" => "doctorlistblock",
+				"#theme" => "block",
+				"#type" => "block",
+				"#content" => array
+				(
+					"first" => array
+					(
+							'#name' => 'doctorlist',
+							'#theme' => 'table',
+							'#type' => 'table'
+					)
+				)
+			),
+			"block1" => array
+			(
+				"#name" => "doctorfieldsblock",
+				"#theme" => "block",
+				"#type" => "block",
+				"#content" => array
+				(
+					"second" => array
+					(
+						'#name' => 'doctorfields',
+						'#theme' => 'fieldset',
+						'#type' => 'fieldset',
+						'#legend' => 'Edit',
+						'#content' => array
+						(
+							array
+							(
+								'#name' => 'firstname',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'First Name'
+							),
+							array
+							(
+								'#name' => 'lastname',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Last Name'
+							),
+							array
+							(
+								'#name' => 'address1',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Address1'
+							),
+							array
+							(
+								'#name' => 'address2',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Address2'
+							),
+							array
+							(
+								'#name' => 'address3',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Address3'
+							),
+							array
+							(
+								'#name' => 'city',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'City'
+							),
+							array
+							(
+								'#name' => 'contactperson',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Contact Person'
+							),
+							array
+							(
+								'#name' => 'country',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Country'
+							),
+							array
+							(
+								'#name' => 'email',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'E-mail'
+							),
+							array
+							(
+								'#name' => 'fax',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Fax'
+							),
+							array
+							(
+								'#name' => 'id',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Id'
+							),
+							array
+							(
+								'#name' => 'locality1',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Locality 1'
+							),
+							array
+							(
+								'#name' => 'locality2',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Locality 2'
+							),
+							array
+							(
+								'#name' => 'postalcode',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Postal Code'
+							),
+							array
+							(
+								'#name' => 'shortname',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Short Name'
+							),
+							array
+							(
+								'#name' => 'telephone',
+								'#theme' => 'textfield',
+								'#type' => 'textfield',
+								'#title' => 'Telephone'
+							)
+						)
+					)
+				)
+			),
+			"last" => array
+			(
+				array
+				(
+					"#name" => "update",
+					"#theme" => "button",
+					"#type" => "button",
+					"#content" => "Update"
+				),
+				array
+				(
+					"#name" => "cancel",
+					"#theme" => "button",
+					"#type" => "button",
+					"#content" => "Cancel"
+				)
+			)
+		);
+		
+		$updateDoctorSheetmainLayer  = array
+		(
+				'#name' => "updatedoctormainlayer",
+				"#theme" => "layer",
+				"#type" => "layer",
+				"#content" => array($updateDoctorSheetmainLayerContent)
+		);
+		$updateDoctorSheetLayers = array();
+		$updateDoctorSheetLayers[] = $updateDoctorSheetmainLayer;
+		$updateDoctorSheet = array ("#name" => "updatedoctorsheet", "#title" => "Update Doctor", "#theme" => "sheet", "#type" => "sheet", '#layers' => $updateDoctorSheetLayers);
+		
 		
 		$addSpecialtySheetmainLayer = array
 		(
@@ -671,15 +853,45 @@ class ThemeEngine
 		$folderBrowserSheetLayers = array();
 		$folderBrowserSheetLayers[] = $folderBrowserSheetmainLayer;
 		$folderBrowserSheet = array("#name" => "folderbrowsersheet", "#title" => "Folder Browser", "#theme" => "sheet", "#type" => "sheet", '#layers' => $folderBrowserSheetLayers);
-		
+
+		$dialogsSheetmainLayerContent = array
+		(
+			"messagebox" => array
+			(
+				"#name" => "messagebox",
+				"#theme" => "block",
+				"#type" => "block",
+				"#content" => array
+				(
+					"message" => array
+					(
+						"#name" => "message",
+						"#theme" => "label",
+						"#type" => "label",
+						"#text" => "message"
+					)
+				)
+			)
+		);
+		$dialogsSheetmainLayer = array
+		(
+			"#name" => "dialogsmainlayer",
+			"#theme" => "layer",
+			"#content" => array($dialogsSheetmainLayerContent)
+		);
+		$dialogsSheetLayers = array();
+		$dialogsSheetLayers[] = $dialogsSheetmainLayer;
+		$dialogsSheet = array("#name" => "dialogssheet","#title" => "This should never been seen","#theme" => "sheet", "#type" => "sheet", "#layers" => $dialogsSheetLayers);
 		$sheets[] = $mainSheet;
 		$sheets[] = $loadfromconciergeSheet;
 		$sheets[] = $addPatientSheet;
 		$sheets[] = $browseDocumentsSheet;
 		$sheets[] = $createreportSheet;
 		$sheets[] = $addDoctorSheet;
+		$sheets[] = $updateDoctorSheet;
 		$sheets[] = $addSpecialtySheet;
 		$sheets[] = $folderBrowserSheet;
+		$sheets[] = $dialogsSheet;
 		$messagePumpPlugin = new MessagePump();
 		$inlineCode = $messagePumpPlugin->Snippet(); 
 		$result = array

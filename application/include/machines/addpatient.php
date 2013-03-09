@@ -1,6 +1,5 @@
 <?php
 
-
 	
 	$machineFactories["addpatient"] = new StateMachine();
 	$machineFactories["addpatient"]->AddTransition("run","starting","running");
@@ -20,9 +19,7 @@
 
 	$machineFactories["addpatient"]->AddEnterCallback("addsuccess", <<<EOD
 	
-		var q = GetMessageQueue();
-		var sm = GetStateMachine(".class-id-addpatientsheet");
-		q.messagepump("send",function() {
+		SendMessage(".class-id-addpatientsheet",function(sm) {
 			sm.cancel();
 		});
 EOD
@@ -52,17 +49,13 @@ EOD
 					],
 					"aaData" : patientsOnDiskJSON.people
 				});
-				var q = GetMessageQueue();
-				var sm = GetStateMachine(".class-id-addpatientsheet");
-				q.messagepump("send",function() {
+				SendMessage(".class-id-addpatientsheet",function(sm) {
 					sm.loadfiles();
 				});
-},
+			},
 			error: function()
 			{
-				var q = GetMessageQueue();
-				var sm = GetStateMachine(".class-id-addpatientsheet");
-				q.messagepump("send",function() {
+				SendMessage(".class-id-addpatientsheet",function(sm) {
 					sm.error();
 				});
 			}
@@ -70,25 +63,61 @@ EOD
 EOD
 	);
 	$machineFactories["addpatient"]->AddEnterCallback("starting", <<<EOD
-		$(".class-id-addpatientsheet button.class-id-mainmenu").button().off("click",CancelAddPatient);
-		$(".class-id-addpatientsheet button.class-id-addpatient").button().off("click",DoAddPatient).button("disable");
-		$(".class-id-newpatientfields input").off("change keyup input",UpdateAddPatientButton);
-		$(".class-id-newpatientfields select").off("change keyup input",UpdateAddPatientButton);
+			
+		$(".class-id-addpatientsheet button.class-id-mainmenu").button().off("click");
+		$(".class-id-addpatientsheet button.class-id-addpatient").button().off("click").button("disable");
+		$(".class-id-newpatientfields input").off("change keyup input");
+		$(".class-id-newpatientfields select").off("change keyup input");
 		$(".class-id-addpatientsheet input.class-id-dob").datepicker("destroy");
 		//$("table.class-id-patientsondisk").off("click",OnPatientAddRowClick);
 			
 		$(".class-id-addpatientsheet").fadeOut('fast',function() {
-			var q = GetMessageQueue();
-			var smMain = GetStateMachine(".class-id-main");
-			q.messagepump("send",function()
-			{
-				smMain.run();
+			
+			SendMessage(".class-id-main",function(sm) {
+				sm.run();
 			});
 		});
 EOD
 	);
 	$machineFactories["addpatient"]->AddLeaveCallback("starting", <<<EOD
 
+		function UpdateAddPatientButton()
+		{
+			function FieldEmpty(name)
+			{
+				var s = $(".class-id-newpatientfields " + name).val();
+				s = $.trim(s);
+				if(s == "")
+					return true;
+				else
+					return false;
+			}
+			function SetButton(isOn)
+			{
+				$("button.class-id-addpatient").button(isOn ? "enable" : "disable");
+			}
+			if(FieldEmpty(".class-id-firstname"))
+			{
+				SetButton(false);
+				return;
+			}
+			if(FieldEmpty(".class-id-lastname"))
+			{
+				SetButton(false);
+				return;
+			}
+			if(FieldEmpty(".class-id-dob"))
+			{
+				SetButton(false);
+				return;
+			}
+			if(FieldEmpty(".class-id-emergencycontact"))
+			{
+				SetButton(false);
+				return;
+			}
+			SetButton(true);
+		}						
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().on("click",CancelAddPatient);
 		$(".class-id-addpatientsheet button.class-id-addpatient").button().on("click",DoAddPatient);
 		$(".class-id-newpatientfields input").on("change keyup input",UpdateAddPatientButton);
@@ -128,18 +157,13 @@ EOD
 					],
 					"aaData" : patientsInDbJSON.patients
 				});
-				var q = GetMessageQueue();
-				var sm = GetStateMachine(".class-id-addpatientsheet");
-				q.messagepump("send",function() {
+				SendMessage(".class-id-addpatientsheet",function(sm) {
 					sm.loaddb();
 				});
 			},
-			error: function(o,msg,msg2)
+			error: function()
 			{
-				debugger;
-				var q = GetMessageQueue();
-				var sm = GetStateMachine(".class-id-addpatientsheet");
-				q.messagepump("send",function() {
+				SendMessage(".class-id-addpatientsheet",function(sm) {
 					sm.error();
 				});
 			}
@@ -180,7 +204,7 @@ EOD
 				"oTableTools": {
 					"aButtons" : []
 	        	},
-			"aoColumnDefs":
+				"aoColumnDefs":
 				[
 					{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
 					{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
@@ -201,8 +225,9 @@ EOD
 			stepMonths : 3
 		});
 		$(".class-id-addpatientsheet").fadeIn('fast',function() {
-			var sm = $(this).data("statemachine");
-			sm.transition();
+			SendMessage($(this),function(sm) {
+				sm.transition();
+			});
 		});
 		return true;
 	

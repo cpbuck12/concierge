@@ -61,6 +61,15 @@ div.class-id-volumesblock {
 div.class-id-foldersblock {
 	float: left;
 }
+
+div.class-id-doctorfieldsblock {
+	//float: left;
+}
+
+div.class-id-doctorlistblock {
+	float: left;
+}
+
 /*
 .dataTables_filter select, .dataTables_filter input
 {

@@ -17,18 +17,18 @@ EOD
 	
 	$machineFactories["addspecialty"]->AddEnterCallback("displayingsuccess", <<<EOD
 		
-		// TODO: add messagebox type acknowledgement
-		var q = GetMessageQueue();
-		var smAddSpecialty = GetStateMachine(".class-id-addspecialtysheet");
-		q.messagepump("send",function() {
-			smAddSpecialty.continue()
+		MessageBox("Add Specialty","Added",function() {
+			SendMessage(".class-id-addspecialtysheet",function(sm) {
+				sm.continue();
+			});
 		});
+
 EOD
 	);
 	$machineFactories["addspecialty"]->AddLeaveCallback("zombie", <<<EOD
 		
-		$(".class-id-addspecialtysheet button.class-id-mainmenu").button().off("click",CancelAddSpecialty);
-		$(".class-id-addspecialtysheet button.class-id-addspecialty").button().off("click",DoAddSpecialty);
+		$(".class-id-addspecialtysheet button.class-id-mainmenu").button().off("click");
+		$(".class-id-addspecialtysheet button.class-id-addspecialty").button().off("click");
 		var tbl = $("table.class-id-specialtyaddfields");
 		$(".class-id-addspecialtysheet").fadeOut('fast',function()
 		{
@@ -36,11 +36,8 @@ EOD
 				var oTable = tbl.dataTable({ bRetrieve: true });
 				oTable.fnDestroy();
 			});
-			var smMain = GetStateMachine(".class-id-main");
-			var q = GetMessageQueue();
-			q.messagepump('send',function()
-			{
-				smMain.run();
+			SendMessage(".class-id-main",function(sm) {
+				sm.run();
 			});
 		});
 EOD
@@ -48,6 +45,47 @@ EOD
 	
 	$machineFactories["addspecialty"]->AddLeaveCallback("starting", <<<EOD
 	
+	
+		function CancelAddSpecialty()
+		{
+			SendMessage(".class-id-addspecialtysheet",function(sm) {
+				sm.cancel();
+			});
+		}
+		function DoAddSpecialty()
+		{
+			var vars = [];
+			var o = {};
+			var sheet = $(".class-id-addspecialtysheet");
+			var acc = "";
+			$(".class-fieldset input",sheet).each(function()
+			{
+				_this = $(this);
+				var classes = _this.attr("class").split(' ');
+				for(var i = 0;i < classes.length;i++)
+				{
+					if(classes[i].substr(0,9) == "class-id-")
+					{
+						var id = classes[i].substr(9);
+						o[id] = _this.val();
+						break;
+					}
+				}
+			});
+			CallServer({
+				command:"AddSpecialty",
+				parameters:o,
+				success:function(data) {
+					SendMessage(".class-id-addspecialtysheet",function(sm) {
+						sm.success();
+					});
+				},
+				failure:function() {
+					// TODO
+				}
+			});
+		}
+			
 		$(".class-id-addspecialtysheet button.class-id-mainmenu").button().on("click",CancelAddSpecialty);
 		$(".class-id-addspecialtysheet button.class-id-addspecialty").button().on("click",DoAddSpecialty);
 		var tbl = $("table.class-id-specialtyaddfields");
@@ -58,15 +96,12 @@ EOD
 			var sm = $(this).data("statemachine");
 			//sm.transition();
 		});
-		$.ajax({
-			type:"POST",
-			url:"http://localhost:50505/ajax/GetSpecialties",
-			data:"{}",
-			dataType:"text",
+		CallServer({
+			command:"GetSpecialties",
+			parameters:{},
 			success: function(data)
 			{
-				debugger;
-				var specialtiesJSON = JSON.parse(data);
+				var specialtiesJSON = data;
 				$(".class-id-addspecialtysheet table.class-id-specialtiesindb").dataTable({
 					bJQueryUI : true,
 					"sDom": 'T<"clear">lfrtip',
@@ -83,14 +118,12 @@ EOD
 					"aaData" : specialtiesJSON.specialties
 				});
 			},
-			error: function()
+			failure: function()
 			{
-				var q = GetMessageQueue();
-				var sm = GetStateMachine(".class-id-addpatientsheet");
-				q.messagepump("send",function() {
+				SendMessage(".class-id-addpatientsheet",function(sm) {
 					sm.error();
 				});
-			}
+			}			
 		});
 		return true;
 	

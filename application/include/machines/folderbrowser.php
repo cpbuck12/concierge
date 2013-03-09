@@ -10,27 +10,22 @@ $machineFactories["folderbrowser"]->AddTransition("run","shutdown","initializing
 
 $machineFactories["folderbrowser"]->AddEnterCallback("shutdown", <<<EOD
 
-	$(".class-id-folderbrowsersheet button.class-id-cancel").button().off('click',FileBrowserCancel).button("destroy"); 
-	$(".class-id-folderbrowsersheet button.class-id-open").button().off('click',FileBrowserOpen).button("destroy");
-	$(".class-id-folderbrowsersheet button.class-id-ok").button().off('click',FileBrowserOk).button("destroy");
+	$(".class-id-folderbrowsersheet button.class-id-cancel").button().off().button("destroy"); 
+	$(".class-id-folderbrowsersheet button.class-id-open").button().off().button("destroy");
+	$(".class-id-folderbrowsersheet button.class-id-ok").button().off().button("destroy");
 	$(".class-id-folderbrowsersheet table").each(function() {
 		var element = $(this);
 		UnstashTable(element);
 	});	
-		
-	var machine = this.init.machine;
-	var q = GetMessageQueue();
-	$(".class-id-folderbrowsersheet").fadeOut("fast",function() {
-		q.messagepump("send",function() { machine.run(msg); });
+
+	SendMessage(".class-id-folderbrowsersheet",function(sm) {
+		sm.run();
 	});
+
 EOD
 	);
 
 $machineFactories["folderbrowser"]->AddAfterCallback("choose", <<<EOD
-
-//	var oTable = elem.dataTable({ bRetrieve : true });
-//	var oTableTools;
-//	elem.each(function() { oTableTools =  TableTools.fnGetInstance(this); } );
 	
 	var initSave = this.init;
 	var foldersElement = $(".class-id-folderbrowsersheet table.class-id-folders");
@@ -48,16 +43,16 @@ $machineFactories["folderbrowser"]->AddAfterCallback("choose", <<<EOD
 			var oTableTools;
 			$(foldersElement).each(function(){ oTableTools = TableTools.fnGetInstance(this); });
 		    var aData = oTableTools.fnGetSelectedData();
-			var payload = JSON.stringify({ path : aData[0].FullName });
-			$.ajax({
-				type:"POST",
-				url:"http://localhost:50505/ajax/SetCurrentDirectory",
-				data : payload,
-				dataType : "text",
+			CallServer({
+				command:"SetCurrentDirectory",
+				paramters:{ path : aData[0].FullName },
 				success: function(_data)
 				{
 					$(".class-id-folderbrowsersheet button.class-id-open").button("disable");
 					BuildFileBrowser(_data,foldersElement,volumesElement,filesElement,false,initSave.type);
+				},
+				failure: function() { 
+					// TODO 
 				}
 			});
 		}
@@ -66,17 +61,19 @@ $machineFactories["folderbrowser"]->AddAfterCallback("choose", <<<EOD
 			var oTable = $(volumesElement).dataTable({bRetrieve : true});
 			var oTableTools;
 			$(volumesElement).each(function(){ oTableTools = TableTools.fnGetInstance(this); });
-		    var aData = oTableTools.fnGetSelectedData(); 
-			var payload = JSON.stringify({ path : aData[0].Name });
-			$.ajax({
-				type:"POST",
-				url:"http://localhost:50505/ajax/SetCurrentDirectory",
-				data : payload,
-				dataType : "text",
+		    var aData = oTableTools.fnGetSelectedData();
+
+			CallServer({
+				command:"SetCurrentDirectory",
+				parameters:{ path : aData[0].Name },
 				success: function(data)
 				{
 					$(".class-id-folderbrowsersheet button.class-id-open").button("disable");
 					BuildFileBrowser(data,foldersElement,volumesElement,filesElement,false);
+				},
+				failure: function()
+				{
+					// TODO
 				}
 			});
 		}
@@ -86,6 +83,43 @@ EOD
 
 $machineFactories["folderbrowser"]->AddEnterCallback("initializing", <<<EOD
 
+	function FileBrowserOk()
+	{
+	    var FullName = 	$(".class-id-folderbrowsersheet div.class-id-folderlabel").text();
+	
+		SendMessage(".class-id-folderbrowsersheet",function(sm) {
+			sm.done({
+				button : "ok",
+				filename : FullName
+			});
+		}); 
+	}
+	
+	function FileBrowserOpen()
+	{
+		var filesElement = $(".class-id-folderbrowsersheet table.class-id-files");
+		var oTable = $(filesElement).dataTable({bRetrieve : true});
+		var oTableTools;
+		$(filesElement).each(function(){ oTableTools = TableTools.fnGetInstance(this); });
+	    var aData = oTableTools.fnGetSelectedData();
+	    var FullName = aData[0].FullName;  // This has NOT BEEN CHECKED
+		SendMessage(".class-id-folderbrowsersheet",function(sm) {
+			sm.done({
+				button : "open",
+				foldername : FullName
+			});
+		}); 
+	}
+	
+	function FileBrowserCancel()
+	{
+		SendMessage(".class-id-folderbrowsersheet",function(sm) {
+			sm.done({
+				button : "cancel",
+			});
+		}); 
+	}
+		
     this.init = msg;
 	var foldersElement = $(".class-id-folderbrowsersheet table.class-id-folders");
     var volumesElement = $(".class-id-folderbrowsersheet table.class-id-volumes");
@@ -110,98 +144,21 @@ $machineFactories["folderbrowser"]->AddEnterCallback("initializing", <<<EOD
 	$(".class-id-folderbrowsersheet button.class-id-cancel").button().on('click',FileBrowserCancel); 
 	$(".class-id-folderbrowsersheet button.class-id-open").button().on('click',FileBrowserOpen);
 	$(".class-id-folderbrowsersheet button.class-id-ok").button().on('click',FileBrowserOk); 
-		
-		//StashElement(foldersElement);
-	//StashElement(volumesElement);
-	//StashElement(filesElement);
-	$.ajax({
-		type:"POST",
-		url:"http://localhost:50505/ajax/SetCurrentDirectory",
-		data:"{}",
-		dataType:"text",
+
+	CallServer({
+		command:"SetCurrentDirectory",
+		parameters:{},
 		success: function(data)
 		{
 		    BuildFileBrowser(data,foldersElement,volumesElement,filesElement,true,msg.type);
-		}
-    }); // ajax
-	$(".class-id-folderbrowsersheet").fadeIn();
-		/*
-	$(".class-id-folderbrowsersheet").fadeIn();
-	$(".class-id-folderbrowsersheet button.class-id-open").button().on("click",DoChangeFolder); 
-	this.owner = msg;
-	$.ajax({
-		type:"POST",
-		url:"http://localhost:50505/ajax/SetCurrentDirectory",
-		data:"{}",
-		dataType:"text",
-		success: function(data)
+		},
+		failure: function()
 		{
-			var result = JSON.parse(data);
-			if(result.status == "ok")
-			{
-				var fileInfo = result.fileInfo;
-				var currentPath = fileInfo.currentPath;
-				var files = fileInfo.files;
-				var folders = fileInfo.folders;
-				var volumes = fileInfo.volumes;
-		
-				$(".class-id-folderbrowsersheet table.class-id-folders").dataTable({
-					bJQueryUI : true,
-					"sDom": 'T<"clear">lfrtip',
-					"oTableTools": {
-						"sRowSelect": "single",
-						"aButtons" : [],
-						"fnRowSelected" : function(nodes) {
-							var fullName = $(nodes[1]).val();
-							SendMessage(".class-id-folderbrowsersheet",function(sm) { sm.choose(); }); 
-						}
-					},
-					"aoColumnDefs":
-					[
-						{ "sTitle": "Name", "aTargets": [ 0 ], "mData": "Name" },
-						{ "sTitle": "FullName", "aTargets": [ 1 ], "mData": "FullName", bVisible : false },
-					],
-					"aaData" : folders
-				});
-		
-				$(".class-id-folderbrowsersheet table.class-id-volumes").dataTable({
-					bJQueryUI : true,
-					"sDom": 'T<"clear">lfrtip',
-					"oTableTools":
-					{
-						"sRowSelect": "single",
-						"aButtons" : [],
-						"fnRowSelected" : function(nodes)
-						{
-							var name = $(nodes[0]).val();
-//							SendMessage(".class-id-folderbrowsersheet",function(sm) { sm.choose(); }); 
-						}
-					},
-					"aoColumnDefs": [{"sTitle" : "Name", "aTargets" : [0], "mData" : "Name" }],
-					"aaData" : volumes
-				});
-		
-				$(".class-id-folderbrowsersheet table.class-id-files").dataTable({
-					bJQueryUI : true,
-					"sDom": 'T<"clear">lfrtip',
-					"oTableTools": {
-						"sRowSelect": "single",
-						"aButtons" : []
-					},
-					"aoColumnDefs":
-					[
-						{ "sTitle": "Name", "aTargets": [ 0 ], "mData": "Name" },
-						{ "sTitle": "Size", "aTargets": [ 1 ], "mData": "Length" },
-						{ "sTitle": "Modified", "aTargets": [ 2 ], "mData": "LastWriteTime" },
-						{ "sTitle": "FullName", "aTargets": [ 3 ], "mData": "FullName", bVisible : false },
-					],
-					"aaData" : files
-				});
-			}
+			//TODO
 		}
+	});
+	$(".class-id-folderbrowsersheet").fadeIn();
 		
-	}); // ajax
-	*/
 				
 EOD
 );

@@ -21,10 +21,8 @@
 		var elem = $("table.class-id-patient");
 		var oTable = elem.dataTable({ bRetrieve: true });
 		oTable.fnDestroy();
-			
-		var q = GetMessageQueue();
-		var sm = GetStateMachine(".class-id-loadfromconciergesheet");
-		q.messagepump("send",function() {
+		
+		SendMessage(".class-id-loadfromconciergesheet",function(sm) {
 			sm.restart();
 		});
 			
@@ -46,14 +44,21 @@ EOD
 EOD
 	);
 	$machineFactories["addfiles"]->AddEnterCallback("patientreselected",<<<EOD
+			
+		function DepopulateFiles()
+		{
+			var elem = $("table.class-id-filesystem");
+			elem.hide();
+			UnstashElement(elem,function() {
+				var oTable = elem.dataTable({ bRetrieve: true });
+				oTable.fnDestroy(true);
+			});
+		}
 		$("button.class-id-loadfiles").button("disable");
 		DepopulateFiles();
-		var q = GetMessageQueue();
-		var sm = GetStateMachine(".class-id-loadfromconciergesheet");
-		q.messagepump("send",function()
-		{
+		SendMessage(".class-id-loadfromconciergesheet",function(sm) {
 			sm.docontinue();
-		});
+		});			
 		return true;
 EOD
 	);
@@ -70,25 +75,36 @@ EOD
 	);
 	$machineFactories["addfiles"]->AddAfterCallback("restart", <<<EOD
 
-		$("table.class-id-patient tr").off("click",OnPatientRowClick);
+		$("table.class-id-patient tr").off("click");
 EOD
 	);			
 	$machineFactories["addfiles"]->AddLeaveCallback("loadingpatients", <<<EOD
 
+		function OnPatientRowClick()
+		{ 
+			// TODO: cleaup
+			SendMessage(".class-id-loadfromconciergesheet",function(sm) {
+				if($("table.class-id-patient tr.DTTT_selected").length > 0)
+				{
+					sm.selectpatient();
+				}
+				else
+				{
+					sm.unselectpatient();
+				}
+			});
+		}
 		$("table.class-id-patient tr").on("click",OnPatientRowClick);
 	
 EOD
 	);
 	$machineFactories["addfiles"]->AddEnterCallback("starting", <<<EOD
 
-		$(".class-id-loadfromconciergesheet button.class-id-mainmenu").button().off("click",CancelFileLoading);
-		$(".class-id-loadfromconciergesheet button.class-id-loadfiles").button().off("click",DoFileLoading);
+		$(".class-id-loadfromconciergesheet button.class-id-mainmenu").button().off("click");
+		$(".class-id-loadfromconciergesheet button.class-id-loadfiles").button().off("click");
 		$(".class-id-loadfromconciergesheet").fadeOut('fast',function() {
-			var q = GetMessageQueue();
-			var smMain = GetStateMachine(".class-id-main");
-			q.messagepump("send",function()
-			{
-				smMain.run();
+			SendMessage(".class-id-main",function(sm) {
+				sm.run();
 			});
 		});
 EOD
@@ -96,11 +112,56 @@ EOD
 
 	$machineFactories["addfiles"]->AddLeaveCallback("starting", <<<EOD
 
+		function CancelFileLoading()
+		{
+			SendMessage(".class-id-loadfromconciergesheet",function(sm) {
+				sm.cancel();
+			});
+		}
+		
+		function DoFileLoading()
+		{
+			oData = {
+		        activities : []
+		 	};
+			var elem = $("table.class-id-filesystem");
+			var oTable = elem.dataTable({ bRetrieve: true });
+			var oTT = TableTools.fnGetInstance(elem[0]);
+			var aData = oTT.fnGetSelectedData();
+			for(var i = 0;i < aData.length;i++)
+			{
+				var o = {
+				    path : aData[i].FullName,
+				    specialty : aData[i].Specialty,
+				    subspecialty : aData[i].Subspecialty,
+				    firstname : aData[i].FirstName,
+				    lastname : aData[i].LastName
+				}
+				oData.activities.push(o);
+			}
+			debugger;
+			CallServer({
+				command:"AddActivities",
+				parameters: oData,
+				success: function(data)
+				{
+					debugger;
+				},
+				failure:function()
+				{
+					debugger;
+				}
+			});
+			debugger;
+			// TODO: load the files
+		}
+			
 		$(".class-id-loadfromconciergesheet button.class-id-mainmenu").button().on("click",CancelFileLoading);
 		$(".class-id-loadfromconciergesheet button.class-id-loadfiles").button().on("click",DoFileLoading);
-			$(".class-id-loadfromconciergesheet").fadeIn('fast',function() {
-			var sm = $(this).data("statemachine");
-			sm.transition();
+		$(".class-id-loadfromconciergesheet").fadeIn('fast',function() {
+			SendMessage(".class-id-loadfromconciergesheet",function(sm) {
+				sm.transition(); // TODO: why is this being called here, when transition() doesn't look valid
+			});
 		});
 		return true;
 
@@ -123,9 +184,7 @@ EOD
 				],
 				"aaData" : patientsOnDiskJSON.people
 			});
-			var q = GetMessageQueue();
-			var sm  = GetStateMachine(".class-id-loadfromconciergesheet");
-			q.messagepump("send",function() {
+			SendMessage(".class-id-loadfromconciergesheet",function(sm) {
 				sm.loaded();
 			});
 			return true;
