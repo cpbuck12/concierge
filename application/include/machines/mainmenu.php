@@ -88,11 +88,10 @@ EOD
 
 $machineFactories["mainmenu"]->AddEnterCallback("creatingwebsite", <<<EOD
 
-		var q = GetMessageQueue();
-		var saveThis = this;
+		var thisMachine = GetStateMachine(".class-id-main");
 		var smOther = SendMessage(".class-id-folderbrowsersheet",function(sm) {
 			sm.run({
-				machine : saveThis,
+				machine : thisMachine,
 				type: "folder" // "file"
 			});
 		});

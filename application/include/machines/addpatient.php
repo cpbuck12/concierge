@@ -26,14 +26,12 @@ EOD
 	);
 	$machineFactories["addpatient"]->AddEnterCallback("dbloaded", <<<EOD
 
-		$.ajax({
-			type:"POST",
-			url:"http://localhost:50505/ajax/GetPeopleOnDisk",
-			data:"{}",
-			dataType:"text",
+		CallServer({
+			command: "GetPeopleOnDisk",
+			parameters: {},
 			success: function(data)
 			{
-				var patientsOnDiskJSON = JSON.parse(data);
+				var patientsOnDiskJSON = data;
 				$(".class-id-addpatientsheet table.class-id-patientsondisk").dataTable({
 					bJQueryUI : true,
 					"sDom": 'T<"clear">lfrtip',
@@ -53,7 +51,7 @@ EOD
 					sm.loadfiles();
 				});
 			},
-			error: function()
+			failure: function()
 			{
 				SendMessage(".class-id-addpatientsheet",function(sm) {
 					sm.error();
@@ -81,6 +79,34 @@ EOD
 	);
 	$machineFactories["addpatient"]->AddLeaveCallback("starting", <<<EOD
 
+			
+		function DoAddPatient()
+		{
+			o = {
+				firstName : $(".class-id-addpatientsheet input.class-id-firstname").val(),
+				lastName : $(".class-id-addpatientsheet input.class-id-lastname").val(),
+				dateOfBirth : $(".class-id-addpatientsheet input.class-id-dob").val(),
+				gender : $(".class-id-addpatientsheet select.class-id-gender").val(),
+				emergencyContact : $(".class-id-addpatientsheet input.class-id-emergencycontact").val()
+			};
+			CallServer({
+				command:"AddPatient",
+				parameters:o,
+				success: function(data)
+				{
+					SendMessage(".class-id-addpatientsheet",function(sm){
+						sm.addpatient();
+					});
+				},
+				failure: function()
+				{
+					SendMessage(".class-id-addpatientsheet",function(sm){
+						sm.error();
+					});
+				}
+			})
+		}
+			
 		function UpdateAddPatientButton()
 		{
 			function FieldEmpty(name)
@@ -122,27 +148,39 @@ EOD
 		$(".class-id-addpatientsheet button.class-id-addpatient").button().on("click",DoAddPatient);
 		$(".class-id-newpatientfields input").on("change keyup input",UpdateAddPatientButton);
 		$(".class-id-newpatientfields select").on("change keyup input",UpdateAddPatientButton);
-			$(".class-id-newpatientfields select").on("change",UpdateAddPatientButton);
-			$(".class-id-addpatientsheet input.class-id-dob").datepicker({
+		$(".class-id-newpatientfields select").on("change",UpdateAddPatientButton);
+			
+		$(".class-id-addpatientsheet input.class-id-dob").val("01/01/2012").datepicker({
 			changeYear:true,
 			changeMonth: true,
-			maxDate : "-1d",
-			minDate : "-100y",
+			maxDate : new Date(),
+			minDate : new Date("January 1,1900"),
 			yearRange : "-99:-15"
+		});
+			
+			/*
+		$(".class-id-addpatientsheet input.class-id-dob").datepicker();
+			*/
+			
+		$(".class-id-addpatientsheet table.class-id-newpatientfields").dataTable({
+			bJQueryUI : true,
+			"bSort": false,
+			"sDom": 't',
+			iDisplayLength : 15
 		});
 		$(".class-id-addpatientsheet").fadeIn('fast');
 			
 EOD
 	);
 	$machineFactories["addpatient"]->AddEnterCallback("running", <<<EOD
-		$.ajax({
-			type:"POST",
-			url:"http://localhost:50505/ajax/GetPeopleInDb",
-			data:"{}",
-			dataType:"text",
+			
+			
+		CallServer({
+			command:"GetPeopleInDb",
+			paramters:{},
 			success: function(data)
 			{
-				var patientsInDbJSON = JSON.parse(data);
+				var patientsInDbJSON = data;
 				$(".class-id-addpatientsheet table.class-id-patientsindb").dataTable({
 					bJQueryUI : true,
 					"sDom": 'T<"clear">lfrtip',
@@ -161,7 +199,7 @@ EOD
 					sm.loaddb();
 				});
 			},
-			error: function()
+			failure: function()
 			{
 				SendMessage(".class-id-addpatientsheet",function(sm) {
 					sm.error();
@@ -174,43 +212,63 @@ EOD
 	$machineFactories["addpatient"]->AddEnterCallback("dberror", <<<EOD
 		
 		
-		$.getJSON("http://localhost:50505/ajax/GetPeopleOnDisk", function (patientsOnDiskJSON) {
-			$(".class-id-addpatientsheet table.class-id-patientsondisk").dataTable({
-				bJQueryUI : true,
-				"sDom": 'T<"clear">lfrtip',
-				"oTableTools": {
-					"sRowSelect": "single",
-					"aButtons" : [],
-					"fnRowSelected" : function() { alert("OnPatientAddRowClick"); }
-	        	},
-				"aoColumnDefs":
-				[
-					{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
-					{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
-				],
-				"aaData" : patientsOnDiskJSON
-			});
-			$(".class-id-addpatientsheet table.class-id-fields").dataTable({
-				bJQueryUI : true,
-				"bSort": false,
-				"sDom": 't',
-				iDisplayLength : 15
-			});
+		CallServer({
+			command:"GetPeopleOnDisk",
+			parameters:{},
+			success: function (patientsOnDiskJSON)
+			{
+				debugger;
+				$(".class-id-addpatientsheet table.class-id-patientsondisk").dataTable({
+					bJQueryUI : true,
+					"sDom": 'T<"clear">lfrtip',
+					"oTableTools": {
+						"sRowSelect": "single",
+						"aButtons" : [],
+						"fnRowSelected" : function() { alert("OnPatientAddRowClick"); }
+		        	},
+					"aoColumnDefs":
+					[
+						{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
+						{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
+					],
+					"aaData" : patientsOnDiskJSON
+				});
+				$(".class-id-addpatientsheet table.class-id-fields").dataTable({
+					bJQueryUI : true,
+					"bSort": false,
+					"sDom": 't',
+					iDisplayLength : 15
+				});
+			},
+			failure: function()
+			{
+				debugger;
+			//TODO
+			}
 		});
-		$.getJSON("http://localhost:50505/ajax/GetPeopleInDb", function (patientsInDbJSON) {
-			$(".class-id-addpatientsheet table.class-id-patientsindb").dataTable({
-				bJQueryUI : true,
-				"sDom": '<"clear">lfrtip',
-				"oTableTools": {
-					"aButtons" : []
-	        	},
-				"aoColumnDefs":
-				[
-					{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
-					{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
-				],
-				"aaData" : patientsInDbJSON
-			}); 
+		CallServer({
+			command: "GetPeopleInDb",
+			parameters: {},
+			success: function (patientsInDbJSON)
+			{
+				$(".class-id-addpatientsheet table.class-id-patientsindb").dataTable({
+					bJQueryUI : true,
+					"sDom": '<"clear">lfrtip',
+					"oTableTools": {
+						"aButtons" : []
+		        	},
+					"aoColumnDefs":
+					[
+						{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
+						{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
+					],
+					"aaData" : patientsInDbJSON
+				});
+			},
+			failure:function()
+			{
+			// TODO
+			} 
 		});   
 		$(".class-id-patientsondisk td").on("click",OnPatientAddRowClick);
 		$(".class-id-addpatientsheet button.class-id-mainmenu").button().on("click",CancelAddPatient);

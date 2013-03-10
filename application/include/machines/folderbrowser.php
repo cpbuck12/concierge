@@ -19,7 +19,10 @@ $machineFactories["folderbrowser"]->AddEnterCallback("shutdown", <<<EOD
 	});	
 
 	SendMessage(".class-id-folderbrowsersheet",function(sm) {
-		sm.run();
+		debugger;
+		$(".class-id-folderbrowsersheet").fadeOut(function() {
+			sm.init.machine.run();
+		});
 	});
 
 EOD
@@ -39,19 +42,22 @@ $machineFactories["folderbrowser"]->AddAfterCallback("choose", <<<EOD
 	{
 		if(msg == "folder")
 		{
+			debugger;
 			var oTable = $(foldersElement).dataTable({bRetrieve : true});
 			var oTableTools;
 			$(foldersElement).each(function(){ oTableTools = TableTools.fnGetInstance(this); });
 		    var aData = oTableTools.fnGetSelectedData();
 			CallServer({
 				command:"SetCurrentDirectory",
-				paramters:{ path : aData[0].FullName },
+				parameters:{ path : aData[0].FullName },
 				success: function(_data)
 				{
+					debugger;
 					$(".class-id-folderbrowsersheet button.class-id-open").button("disable");
 					BuildFileBrowser(_data,foldersElement,volumesElement,filesElement,false,initSave.type);
 				},
-				failure: function() { 
+				failure: function() {
+					debugger;
 					// TODO 
 				}
 			});
@@ -73,7 +79,8 @@ $machineFactories["folderbrowser"]->AddAfterCallback("choose", <<<EOD
 				},
 				failure: function()
 				{
-					// TODO
+					debugger;
+		// TODO
 				}
 			});
 		}

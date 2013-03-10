@@ -52,12 +52,13 @@ EOD
 
 $machineFactories["adddoctor"]->AddLeaveCallback("shutdown", <<<EOD
 
+		this.init();/*
 		$(".class-id-adddoctorsheet button.class-id-mainmenu").button().on("click",CancelAddDoctor);
 		$(".class-id-adddoctorsheet button.class-id-adddoctor").button().on("click",DoAddDoctor);
 		var tbl = $("table.class-id-doctoraddfields");
 		StashElement(tbl);
 		tbl.dataTable({ "sDom":"t","bJQueryUI": true,"bPageinate":false,
-				iDisplayLength : 15, bSort : false});
+				iDisplayLength : 15, bSort : false});*/
 		$(".class-id-adddoctorsheet").fadeIn();
 		return true;
 
@@ -67,12 +68,73 @@ EOD
 
 $machineFactories["adddoctor"]->AddLeaveCallback("starting", <<<EOD
 
-		$(".class-id-adddoctorsheet button.class-id-mainmenu").button().on("click",CancelAddDoctor);
-		$(".class-id-adddoctorsheet button.class-id-adddoctor").button().on("click",DoAddDoctor);
+
+		function DoAddDoctor()
+		{
+			var vars = [];
+			var o = {};
+			var sheet = $(".class-id-adddoctorsheet");
+			var acc = "";
+			$(".class-fieldset input",sheet).each(function()
+			{
+				var _this = $(this);
+				var classes = _this.attr("class").split(' ');
+				for(var i = 0;i < classes.length;i++)
+				{
+					if(classes[i].substr(0,9) == "class-id-")
+					{
+						var id = classes[i].substr(9);
+						o[id] = _this.val();
+		//				acc = acc + id + "\\n";
+		//				acc = acc + _this.val() + "\\n";
+						break;
+					}
+				}
+			});
+			CallServer({
+				command:"AddDoctor",
+				parameters:o,
+				success: function(data)
+				{
+					if(data.status == "ok")
+					{	
+						SendMessage(".class-id-adddoctorsheet",function(sm) {
+							sm.success();
+						})
+					}
+					else // status == "error"
+					{
+						SendMessage(".class-id-adddoctorsheet",function(sm) {
+							sm.error_("Error adding doctor.  Reason:"+data.reason);
+						});
+					}
+				},
+				failure: function()
+				{
+					SendMessage(".class-id-adddoctorsheet",function(sm) {
+						sm.error_("Error adding doctor");
+					});
+				}
+				
+			});
+		}
+
+		
+		
+		this.init = function() {
+			$(".class-id-adddoctorsheet button.class-id-mainmenu").button().on("click",function() {
+				SendMessage(".class-id-adddoctorsheet",function(sm) {
+					sm.cancel();
+				});
+			});
+			$(".class-id-adddoctorsheet button.class-id-adddoctor").button().on("click",DoAddDoctor);
+			var tbl = $("table.class-id-doctoraddfields");
+			StashElement(tbl);
+			tbl.dataTable({ "sDom":"t","bJQueryUI": true,"bPageinate":false,
+					iDisplayLength : 15, bSort : false});
+		}
+		this.init();
 		var tbl = $("table.class-id-doctoraddfields");
-		StashElement(tbl);
-		tbl.dataTable({ "sDom":"t","bJQueryUI": true,"bPageinate":false,
-				iDisplayLength : 15, bSort : false});
 		$("input.class-id-country",tbl).val("USA");
 		$("input.class-id-city",tbl).val("New York");
 		$("input.class-id-locality1",tbl).val("NY");
