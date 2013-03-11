@@ -352,7 +352,6 @@ function PopulateFiles(after)
 		},
 		success: function(data)
 		{
-			var filesOnDiskJSON = JSON.parse(data);
 			var elem = $("table.class-id-filesystem");
 			elem.show();
 			var oTable = elem.dataTable({
@@ -366,7 +365,7 @@ function PopulateFiles(after)
 						{ "sTitle": "Filename", "aTargets": [ 5 ], "mData": "FileName" },
 						{ "sTitle": "Path",bVisible:false, "aTargets": [ 6 ], "mData": "FullName" }
 					],
-				aaData : filesOnDiskJSON.files,
+				aaData : data.files,
 				bJQueryUI: true,
 				"sDom": 'T<"clear">lfrtip',
 				oTableTools : 
@@ -410,7 +409,7 @@ function CallServer(options)
 		success:function(data) {
 			options.success(JSON.parse(data));
 		},
-		failure:function() {
+		error:function() {
 			options.failure();
 		}
 	});

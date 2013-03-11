@@ -3,7 +3,7 @@
 	$machineFactories["addfiles"] = new StateMachine();
 	$machineFactories["addfiles"]->AddTransition("run","starting","loadingpatients");
 	$machineFactories["addfiles"]->AddTransition("loaded","loadingpatients","waitingonpatient");
-//	$machineFactories["addfiles"]->AddTransition("notloaded","loadingpatients","cancelling"); // TODO: not handled, timeouts not handled in firefox with $.getJSON
+	$machineFactories["addfiles"]->AddTransition("notloaded","loadingpatients","cancelling");
 	$machineFactories["addfiles"]->AddTransition("selectpatient","waitingonpatient","patientselected");
 	$machineFactories["addfiles"]->AddTransition("selectpatient","patientselected","patientreselected");
 	$machineFactories["addfiles"]->AddTransition("docontinue","patientreselected","patientselected");
@@ -159,15 +159,61 @@ EOD
 		$(".class-id-loadfromconciergesheet button.class-id-mainmenu").button().on("click",CancelFileLoading);
 		$(".class-id-loadfromconciergesheet button.class-id-loadfiles").button().on("click",DoFileLoading);
 		$(".class-id-loadfromconciergesheet").fadeIn('fast',function() {
+			/*
 			SendMessage(".class-id-loadfromconciergesheet",function(sm) {
 				sm.transition(); // TODO: why is this being called here, when transition() doesn't look valid
 			});
+			*/
 		});
 		return true;
 
 EOD
 	);
 	$machineFactories["addfiles"]->AddEnterCallback("loadingpatients", <<<EOD
+			
+		function Failure(msg)
+		{
+			SendMessage(".class-id-addpatientsheet",function(sm) {
+				sm.notloaded(msg);
+			});
+		}
+			
+		CallServer({
+			command:"GetPeopleOnDisk",
+			parameters:{},
+			success: function(data)
+			{
+				if(data.status == "ok")
+				{
+					var oTable = $("table.class-id-patient").dataTable({
+						"bJQueryUI": true,
+						"sDom": 'T<"clear">lfrtip',
+						"oTableTools": {
+							"sRowSelect": "single",
+							"aButtons" : []
+			        	},
+						"aoColumnDefs":
+						[
+							{ "sTitle": "First Name", "aTargets": [ 0 ], "mData": "FirstName" },
+							{ "sTitle": "Last Name", "aTargets": [ 1 ], "mData": "LastName" },
+						],
+						"aaData" : data.people
+					});
+					SendMessage(".class-id-loadfromconciergesheet",function(sm) {
+						sm.loaded();
+					});			
+				}
+				else
+				{
+					Failure("Could not get patient list,reason:"+data.reason);
+				}
+			},
+			failure: function()
+			{
+				Failure("Error calling the server while trying to get the patient list"); 
+			}
+		});
+			/*
 			$.getJSON("http://localhost:50505/ajax/GetPeopleOnDisk", function (patientsOnDiskJSON) {
 			var oTable = $("table.class-id-patient").dataTable({
 				"bJQueryUI": true,
@@ -188,6 +234,6 @@ EOD
 				sm.loaded();
 			});
 			return true;
-		});
+		});*/
 EOD
 	);
