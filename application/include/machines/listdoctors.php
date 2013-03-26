@@ -152,8 +152,6 @@ $machineFactories["listdoctors"]->AddEnterCallback("waiting", <<<EOD
 	function SetupFieldsTable(sheet)
 	{
 		var tbl = $("table.class-id-doctorfields",sheet);
-		$("input.class-id-firstname",tbl).attr("readonly","true");
-		$("input.class-id-lastname",tbl).attr("readonly","true");
 		$("input.class-id-shortname",tbl).attr("readonly","true");
 		$("input.class-id-id",tbl).attr("readonly","true");
 

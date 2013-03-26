@@ -319,6 +319,26 @@ function BuildFileBrowser(data,foldersElement,volumesElement,filesElement,firstT
 	}
 }
 
+
+function downloadURL(url) {
+    var hiddenIFrameID = 'hiddenDownloader',
+        iframe = document.getElementById(hiddenIFrameID);
+    if (iframe === null) {
+        iframe = document.createElement('iframe');
+        iframe.id = hiddenIFrameID;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    }
+    iframe.src = url;
+};
+
+function downloadFile(id) {
+	debugger;
+	window.open("http://localhost:50505/DownloadFile/"+id+".PDF","_blank")
+	//downloadURL("http://localhost:50505/DownloadFile/"+id);
+}
+
+
 function StashElement(elem)
 {
 	$(elem).each(function() {
@@ -496,6 +516,7 @@ jQuery(document).ready(function () {
 	SetStateMachine(".class-id-addpatientsheet",StateMachineFactories["addpatient"]());
 	SetStateMachine(".class-id-addspecialtysheet",StateMachineFactories["addspecialty"]());
 	SetStateMachine(".class-id-folderbrowsersheet",StateMachineFactories["folderbrowser"]());
+	SetStateMachine(".class-id-documentbrowsersheet",StateMachineFactories["documentbrowser"]());
 	/* end: state machines setup */
 
 	$(".class-initially-hidden").hide().removeClass("class-initially-hidden");
@@ -525,6 +546,9 @@ jQuery(document).ready(function () {
 					case "Create Website":
 						smMain.createwebsite();
 						break;
+					case "Browse Documents":
+						smMain.browsedocuments();
+						break;
 				}
 			}
 		}
@@ -532,6 +556,33 @@ jQuery(document).ready(function () {
 	smMain.run();
 });
 
+
+function YesNoBox(title,message,after)
+{
+	var dialogSheet =  $(".class-id-dialogssheet");
+	var messagebox = $("div.class-id-messagebox",dialogSheet);
+	var messageDiv = $("div.class-id-message",messagebox);
+ 	messageDiv.attr("title",title);
+	messageDiv.text(message);
+	var choice = "close";
+	messageDiv.dialog({
+		model: true,
+		close : function(even,ui) {
+			$(this).dialog("destroy");
+			after(choice);
+		},
+		buttons : {
+			Yes : function() {
+				choice = "yes";
+				$(this).dialog("close");
+			},
+			No : function() {
+				choice = "no";
+				$(this).dialog("close");
+			}
+		}
+	});
+}
 
 function MessageBox(title,message,after)
 {

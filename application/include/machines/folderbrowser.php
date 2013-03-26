@@ -29,7 +29,19 @@ EOD
 	);
 
 $machineFactories["folderbrowser"]->AddAfterCallback("choose", <<<EOD
-	
+
+	CallServer({
+		command:"CreateWebsite",
+		parameters: { id : 8, destination : "c:\\\\temp\\\\parkit" },
+		success: function(data)
+		{
+		alert(data);
+		},
+		failure:function()
+		{
+		alert("33 1/3");
+		}
+	});
 	var initSave = this.init;
 	var foldersElement = $(".class-id-folderbrowsersheet table.class-id-folders");
     var volumesElement = $(".class-id-folderbrowsersheet table.class-id-volumes");

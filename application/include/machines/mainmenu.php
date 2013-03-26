@@ -8,12 +8,14 @@ $machineFactories["mainmenu"]->AddTransition("adddoctor", "waiting", "addingdoct
 $machineFactories["mainmenu"]->AddTransition("listdoctors", "waiting", "listdoctors");
 $machineFactories["mainmenu"]->AddTransition("addspecialty", "waiting", "addingspecialty");
 $machineFactories["mainmenu"]->AddTransition("createwebsite", "waiting", "creatingwebsite");
+$machineFactories["mainmenu"]->AddTransition("browsedocuments", "waiting", "browsingdocuments");
 $machineFactories["mainmenu"]->AddTransition("run", "addingfiles", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingpatient", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingdoctor", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "listdoctors", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingspecialty", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "creatingwebsite", "waiting");
+$machineFactories["mainmenu"]->AddTransition("run", "browsingdocuments", "waiting");
 
 
 $machineFactories["mainmenu"]->AddEnterCallback("waiting", <<<EOD
@@ -93,6 +95,18 @@ $machineFactories["mainmenu"]->AddEnterCallback("creatingwebsite", <<<EOD
 			sm.run({
 				machine : thisMachine,
 				type: "folder" // "file"
+			});
+		});
+		return true;
+EOD
+);
+
+$machineFactories["mainmenu"]->AddEnterCallback("browsingdocuments", <<<EOD
+
+		var thisMachine = GetStateMachine(".class-id-main");
+		var smOther = SendMessage(".class-id-documentbrowsersheet",function(sm) {
+			sm.run({
+				machine : thisMachine
 			});
 		});
 		return true;

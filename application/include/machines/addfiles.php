@@ -140,16 +140,32 @@ EOD
 				oData.activities.push(o);
 			}
 			debugger;
+			function Failure(msg)
+			{
+				MessageBox("Error",msg,function() {
+					SendMessage(".class-id-loadfromconciergesheet",function(sm) {
+						debugger;
+					});
+				}); 
+			}
 			CallServer({
 				command:"AddActivities",
 				parameters: oData,
 				success: function(data)
 				{
-					debugger;
+					if(data.status == "ok")
+					{
+						MessageBox("Success!","Please press the <F5> key",function() {});
+					}
+					else
+					{
+						debugger;
+						Failure("Could not add activity, reason:"+data.reason);
+					}
 				},
 				failure:function()
 				{
-					debugger;
+					Failure("Error calling server while trying to add activity");
 				}
 			});
 			debugger;
