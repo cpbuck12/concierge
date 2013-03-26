@@ -122,6 +122,43 @@ class ThemeEngine
 							),
 							array
 							(
+								'#name' => 'managereleases',
+								'#title' => 'Manage Releases',
+								'#theme' => 'menuitem',
+								'#type' => 'menuitem',
+								'#submenu' => array
+								(
+									'#name' => 'managereleasesmenu',
+									'#theme' => 'menu',
+									'#type' => 'menu',
+									'#content' => array
+									(
+										array
+										(
+											'#name' => 'listreleases',
+											'#title' => 'List Releases',
+											'#theme' => 'menuitem',
+											'#type' => 'menuitem'
+										),
+										array
+										(
+											'#name' => 'addreleaserequest',
+											'#title' => 'Add Release Request',
+											'#theme' => 'menuitem',
+											'#type' => 'menuitem'
+										),
+										array
+										(
+											'#name' => 'addreleaseresponse',
+											'#title' => 'Add Release Response',
+											'#theme' => 'menuitem',
+											'#type' => 'menuitem'
+										)
+									)
+								)
+							),
+							array
+							(
 								'#name' => 'managedoctors',
 								'#title' => 'Manage Doctors',
 								'#theme' => 'menuitem',
@@ -146,7 +183,7 @@ class ThemeEngine
 											'#title' => 'List Doctors',
 											'#theme' => 'menuitem',
 											'#type' => 'menuitem'
-										),
+										)
 									)
 								)
 							)
@@ -854,6 +891,46 @@ class ThemeEngine
 		$folderBrowserSheetLayers[] = $folderBrowserSheetmainLayer;
 		$folderBrowserSheet = array("#name" => "folderbrowsersheet", "#title" => "Folder Browser", "#theme" => "sheet", "#type" => "sheet", '#layers' => $folderBrowserSheetLayers);
 
+		$documentBrowserSheetmainLayerContent = array
+		(
+			"docs" => array
+			(
+				"#name" => "documents",
+				"#theme" => "table",
+				"#type" => "table"
+			),
+			"view" => array
+			(
+				'#name' => 'view',
+				'#theme' => 'button',
+				'#type' => 'button',
+				'#content' => 'View'
+			),
+			"delete" => array
+			(
+				'#name' => 'delete',
+				'#theme' => 'button',
+				'#type' => 'button',
+				'#content' => 'Delete'
+			),
+			"mainmenu" => array
+			(
+				'#name' => 'mainmenu',
+				'#theme' => 'button',
+				'#type' => 'button',
+				'#content' => 'Main Menu'
+			)
+		);
+		$documentBrowserSheetmainLayer = array
+		(
+				"#name" => "documentbrowsermainlayer",
+				"#theme" => "layer",
+				"#content" => array($documentBrowserSheetmainLayerContent)
+		);		
+		$documentBrowserSheetLayers = array();
+		$documentBrowserSheetLayers[] = $documentBrowserSheetmainLayer;		
+		$documentBrowserSheet = array("#name" => "documentbrowsersheet", "#title" => "Document Browser", "#theme" => "sheet", "#type" => "sheet", '#layers' => $documentBrowserSheetLayers);
+		
 		$dialogsSheetmainLayerContent = array
 		(
 			"messagebox" => array
@@ -891,6 +968,7 @@ class ThemeEngine
 		$sheets[] = $updateDoctorSheet;
 		$sheets[] = $addSpecialtySheet;
 		$sheets[] = $folderBrowserSheet;
+		$sheets[] = $documentBrowserSheet;
 		$sheets[] = $dialogsSheet;
 		$messagePumpPlugin = new MessagePump();
 		$inlineCode = $messagePumpPlugin->Snippet(); 
