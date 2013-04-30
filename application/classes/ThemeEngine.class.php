@@ -94,6 +94,13 @@ class ThemeEngine
 						(
 							array
 							(
+								'#name' => 'addfile',
+								'#title' => 'Add file',
+								'#theme' => 'menuitem',
+								'#type' => 'menuitem'
+							),
+							array
+							(
 								'#name' => 'loadfromconciergemenuitem',
 								'#title' => 'Load file from Concierge Directories',
 								'#theme' => 'menuitem',
@@ -389,6 +396,54 @@ class ThemeEngine
 		$loadfromconciergeSheetLayers = array();
 		$loadfromconciergeSheetLayers[] = $loadfromconciergeSheetmainLayer;
 		$loadfromconciergeSheet = array ("#name" => "loadfromconciergesheet", "#title" => "Concierge Loader", "#theme" => "sheet" , "#type" => "sheet", "#layers" => $loadfromconciergeSheetLayers);
+		
+		$loadfileSheetmainLayerContent = array
+		(
+			'first' => array
+			(
+				'#name' => 'loadfilefields',
+				'#theme' => 'fieldset',
+				'#type' => 'fieldset',
+				'#legend' => 'File Information',
+				'#content' => array
+				(
+					array
+					(
+						'#name' => 'path',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Path'
+					),
+					array
+					(
+						'#name' => 'name',
+						'#theme' => 'textfield',
+						'#type' => 'textfield',
+						'#title' => 'Name'
+					)
+				)
+			),
+			'second' => array
+			(
+				array
+				(
+					'#name' => 'addfile',
+					'#theme' => 'button',
+					'#type' => 'button',
+					'#content' => 'Add'
+				)
+			)
+		);
+		$loadfileSheetmainLayer = array
+		(
+			'#name' => 'loadfilemainlayer',
+			'#theme' => 'layer',
+			'#type' => 'layer',
+			'#content' => array($loadfileSheetmainLayerContent)
+		);
+		$loadfileSheetLayers= array();
+		$loadfileSheetLayers[] = $loadfileSheetmainLayer;
+		$loadfileSheet = array('#name' => 'loadfilesheet', '#title' => 'Load File','#theme' => 'sheet', '#type' => 'sheet', '#layers' => $loadfileSheetLayers);
 		
 		$addPatientSheetmainLayer = array
 		(
@@ -970,6 +1025,7 @@ class ThemeEngine
 		$sheets[] = $folderBrowserSheet;
 		$sheets[] = $documentBrowserSheet;
 		$sheets[] = $dialogsSheet;
+		$sheets[] = $loadfileSheet;
 		$messagePumpPlugin = new MessagePump();
 		$inlineCode = $messagePumpPlugin->Snippet(); 
 		$result = array

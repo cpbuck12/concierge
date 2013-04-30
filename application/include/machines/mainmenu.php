@@ -2,6 +2,7 @@
 
 $machineFactories["mainmenu"] = new StateMachine();
 $machineFactories["mainmenu"]->AddTransition("run", "starting", "waiting");
+$machineFactories["mainmenu"]->AddTransition("addfile", "waiting", "addingfile");
 $machineFactories["mainmenu"]->AddTransition("addpatient", "waiting", "addingpatient");
 $machineFactories["mainmenu"]->AddTransition("addfiles", "waiting", "addingfiles");
 $machineFactories["mainmenu"]->AddTransition("adddoctor", "waiting", "addingdoctor");
@@ -9,6 +10,7 @@ $machineFactories["mainmenu"]->AddTransition("listdoctors", "waiting", "listdoct
 $machineFactories["mainmenu"]->AddTransition("addspecialty", "waiting", "addingspecialty");
 $machineFactories["mainmenu"]->AddTransition("createwebsite", "waiting", "creatingwebsite");
 $machineFactories["mainmenu"]->AddTransition("browsedocuments", "waiting", "browsingdocuments");
+$machineFactories["mainmenu"]->AddTransition("run", "addingfile", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingfiles", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingpatient", "waiting");
 $machineFactories["mainmenu"]->AddTransition("run", "addingdoctor", "waiting");
@@ -42,6 +44,7 @@ $machineFactories["mainmenu"]->AddLeaveCallback("waiting", <<<EOD
 		return true;
 EOD
 );
+
 $machineFactories["mainmenu"]->AddEnterCallback("addingfiles", <<<EOD
 
 		SendMessage(".class-id-loadfromconciergesheet",function(sm) {
@@ -50,6 +53,26 @@ $machineFactories["mainmenu"]->AddEnterCallback("addingfiles", <<<EOD
 		return true;
 EOD
 );
+
+$machineFactories["mainmenu"]->AddEnterCallback("addingfile", <<<EOD
+
+		SendMessage(".class-id-loadfilesheet",function(sm) {
+			sm.run();
+		});
+		return true;
+EOD
+);
+
+$machineFactories["mainmenu"]->AddEnterCallback("addingfile", <<<EOD
+
+		SendMessage(".class-id-loadfilesheet",function(sm) {
+			sm.run();
+		});
+		return true;
+EOD
+);
+
+
 
 $machineFactories["mainmenu"]->AddEnterCallback("addingdoctor", <<<EOD
 

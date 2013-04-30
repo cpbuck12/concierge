@@ -517,6 +517,7 @@ jQuery(document).ready(function () {
 	SetStateMachine(".class-id-addspecialtysheet",StateMachineFactories["addspecialty"]());
 	SetStateMachine(".class-id-folderbrowsersheet",StateMachineFactories["folderbrowser"]());
 	SetStateMachine(".class-id-documentbrowsersheet",StateMachineFactories["documentbrowser"]());
+	SetStateMachine(".class-id-loadfilesheet",StateMachineFactories["addfile"]())
 	/* end: state machines setup */
 
 	$(".class-initially-hidden").hide().removeClass("class-initially-hidden");
@@ -545,6 +546,9 @@ jQuery(document).ready(function () {
 						break;
 					case "Create Website":
 						smMain.createwebsite();
+						break;
+					case "Add file":
+						smMain.addfile();
 						break;
 					case "Browse Documents":
 						smMain.browsedocuments();
